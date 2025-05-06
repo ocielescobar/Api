@@ -1,0 +1,70 @@
+//poblar usuario
+INSERT INTO Usuario (nombre, correo, contrasena, rut, rol, fecha) VALUES
+('Ana López', 'ana.lopez@example.com', 'pass123', '11111111-1', 'cliente', NOW()),
+('Carlos Díaz', 'carlos.diaz@example.com', 'carlospass', '22222222-2', 'cliente', NOW()),
+('Beatriz Rojas', 'beatriz.rojas@example.com', 'rojas2025', '33333333-3', 'cliente', NOW()),
+('Daniel Soto', 'daniel.soto@example.com', 'soto321', '44444444-4', 'cliente', NOW()),
+('Elena Pérez', 'elena.perez@example.com', 'eperez', '55555555-5', 'cliente', NOW()),
+('Francisco Vidal', 'francisco.vidal@example.com', 'fvidal123', '66666666-6', 'cliente', NOW()),
+('Gabriela Ruiz', 'gabriela.ruiz@example.com', 'gabypass', '77777777-7', 'cliente', NOW()),
+('Héctor Mora', 'hector.mora@example.com', 'hmora2025', '88888888-8', 'cliente', NOW()),
+('Isabel Torres', 'isabel.torres@example.com', 'torres456', '99999999-9', 'cliente', NOW()),
+('Jorge Fuentes', 'jorge.fuentes@example.com', 'fuentes789', '12345678-0', 'cliente', NOW());
+
+//poblar producto
+INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, precio) VALUES
+('P001', 'Papel Higiénico Doble Hoja', 'Elite', 'Higiene', 'Papel suave y resistente, 30 metros.', 2990),
+('P002', 'Jabón Líquido Antibacterial', 'Lysol', 'Higiene', 'Jabón líquido con dispensador, 500 ml.', 3290),
+('P003', 'Detergente Ropa Líquido', 'Ariel', 'Limpieza', 'Detergente para ropa blanca y color, 3 L.', 8490),
+('P004', 'Toallas de Papel', 'Scott', 'Higiene', 'Toallas de papel absorbentes, paquete de 2.', 1890),
+('P005', 'Desinfectante Multiusos', 'Virutex', 'Limpieza', 'Desinfectante para superficies, 1 L.', 4590),
+('P006', 'Cloro Gel', 'Clorox', 'Limpieza', 'Cloro en gel, fragancia lavanda, 900 ml.', 2790),
+('P007', 'Limpiavidrios', 'Mr. Músculo', 'Limpieza', 'Spray para vidrios y espejos, 500 ml.', 2690),
+('P008', 'Servilletas de Papel', 'Elite', 'Higiene', '100 servilletas de papel blancas.', 990),
+('P009', 'Bolsas de Basura 80L', 'Virutex', 'Aseo', 'Paquete de 10 bolsas resistentes.', 3490),
+('P010', 'Guantes de Látex', 'Mapa', 'Protección', 'Guantes reutilizables talla M.', 1990);
+
+//poblar sucursal
+INSERT INTO sucursal (id_sucursal, nombre, direccion) VALUES
+(1, 'Sucursal Central', 'Calle Ficticia 123, Santiago'),
+(2, 'Sucursal Norte', 'Avenida Norte 456, Santiago'),
+(3, 'Sucursal Sur', 'Calle del Sur 789, Santiago'),
+(4, 'Sucursal Este', 'Calle Oriente 321, Santiago'),
+(5, 'Sucursal Oeste', 'Avenida Oeste 654, Santiago'),
+(6, 'Sucursal Centro Comercial', 'Centro Comercial 45, Santiago'),
+(7, 'Sucursal Vicuña Mackenna', 'Vicuña Mackenna 5000, Santiago'),
+(8, 'Sucursal Providencia', 'Providencia 1234, Santiago'),
+(9, 'Sucursal Las Condes', 'Las Condes 2345, Santiago'),
+(10, 'Sucursal Maipú', 'Maipú 6789, Santiago');
+
+//poblar inventario
+INSERT INTO Inventario (id_inventario, id_producto, id_sucursal, stock) VALUES
+(1, 1, 1, 50),
+(2, 2, 1, 30),
+(3, 3, 2, 80),
+(4, 4, 2, 45),
+(5, 5, 3, 60),
+(6, 6, 3, 70),
+(7, 7, 4, 20),
+(8, 8, 5, 90),
+(9, 9, 6, 15),
+(10, 10, 7, 100);
+
+//poblar estado_pedido
+INSERT INTO estado_pedido (id_estado, nombre) 
+VALUES
+(1, 'pendiente'),
+(2, 'en proceso'),
+(3, 'entregado'),
+(4, 'cancelado'),
+(5, 'retirado'),
+(6, 'en espera'),
+(7, 'completado');
+
+//poblar tipo_entrega
+INSERT INTO tipo_entrega (id_tipo_entrega, nombre)
+VALUES
+  (1, 'A domicilio'),
+  (2, 'Retiro en tienda'),
+  (3, 'Punto de recogida');
+

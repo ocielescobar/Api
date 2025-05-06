@@ -1,0 +1,27 @@
+{
+  "name": "integracion",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "description": "Este proyecto es una API REST básica que permite realizar un **login** de usuarios a través de un endpoint conectado a una base de datos MySQL. El código está organizado de manera modular para facilitar su mantenimiento y escalabilidad.",
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.14.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ErnestoLeonidas/api_node_integracion.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ErnestoLeonidas/api_node_integracion/issues"
+  },
+  "homepage": "https://github.com/ErnestoLeonidas/api_node_integracion#readme"
+}
