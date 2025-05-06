@@ -8,7 +8,7 @@ const ProductoRoutes = require('./routes/ProductoRoutes');
 const sucursalRoutes = require('./routes/sucursalRoutes');
 const inventarioRoutes = require('./routes/inventarioRoutes');
 const estadoPedidoRoutes = require('./routes/estadoPedidoRoutes');
-
+const tipoEntregaRoutes = require ('./routes/tipoEntregaRoutes');
 app.use(express.json());
 //app.use('/login', authRoutes);
 
@@ -18,6 +18,7 @@ app.use('/api', ProductoRoutes);
 app.use('/api/sucursal', sucursalRoutes);
 app.use('/api/inventario', inventarioRoutes);
 app.use('/api/estado_pedido', estadoPedidoRoutes);
+app.use('/api/tipoEntrega', tipoEntregaRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Servidor corriendo en el puerto ${process.env.PORT}`);
