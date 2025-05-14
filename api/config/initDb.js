@@ -7,6 +7,8 @@ const connection = mysql.createConnection({
   multipleStatements: true
 });
 
+//Base de datos
+
 const sql = `
 
 CREATE DATABASE IF NOT EXISTS tienda_db;
@@ -112,6 +114,15 @@ CREATE TABLE IF NOT EXISTS Pago (
     monto DECIMAL(10,2),
     FOREIGN KEY (id_pedido) REFERENCES Pedido(id_pedido),
     FOREIGN KEY (metodo_pago) REFERENCES Metodo_Pago(id_metodo_pago)
+);
+
+CREATE TABLE IF NOT EXISTS Carrito (
+    id_carrito INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT,
+    id_producto INT,
+    cantidad INT,
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
+    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto)
 );
 `;
 

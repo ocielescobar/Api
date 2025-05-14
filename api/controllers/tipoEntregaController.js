@@ -1,86 +1,61 @@
-const db = require('../config/db');
+const tipoEntregaModel = require('../models/tipoEntregaModel');
 
-// Obtener todos los tipos de entrega
-exports.getAllTipoEntrega = (req, res) => {
-  const sql = 'SELECT * FROM tipo_entrega';
-  
-  db.query(sql, (err, results) => {
-    if (err) return res.status(500).json({ error: 'Error al obtener los tipos de entrega' });
-    res.status(200).json(results);
-  });
-};
-
-// Obtener un tipo de entrega por id
-exports.getTipoEntregaById = (req, res) => {
-  const { id } = req.params;
-  
-  const sql = 'SELECT * FROM tipo_entrega WHERE id_tipo_entrega = ?';
-  
-  db.query(sql, [id], (err, results) => {
-    if (err) return res.status(500).json({ error: 'Error al obtener el tipo de entrega' });
-    if (results.length > 0) {
-      return res.status(200).json(results[0]);
-    } else {
-      return res.status(404).json({ message: 'Tipo de entrega no encontrado' });
+// Obtener tipos de entrega
+const obtenerTiposEntrega = (req, res) => {
+  tipoEntregaModel.obtenerTiposEntrega((err, tipos) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al obtener los tipos de entrega' });
     }
+    res.json(tipos);
   });
 };
 
-// Crear un nuevo tipo de entrega
-exports.createTipoEntrega = (req, res) => {
-  const { nombre } = req.body;
-  
-  const sql = 'INSERT INTO tipo_entrega (nombre) VALUES (?)';
-  
-  db.query(sql, [nombre], (err, results) => {
-    if (err) return res.status(500).json({ error: 'Error al crear el tipo de entrega' });
-    res.status(201).json({ message: 'Tipo de entrega creado', id: results.insertId });
-  });
-};
-
-// Actualizar un tipo de entrega (PUT)
-exports.updateTipoEntrega = (req, res) => {
+// Obtener tipo de entrega por id
+const obtenerTipoEntregaPorId = (req, res) => {
   const { id } = req.params;
-  const { nombre } = req.body;
-
-  const sql = 'UPDATE tipo_entrega SET nombre = ? WHERE id_tipo_entrega = ?';
-
-  db.query(sql, [nombre, id], (err, results) => {
-    if (err) return res.status(500).json({ error: 'Error al actualizar el tipo de entrega' });
-    if (results.affectedRows === 0) {
-      return res.status(404).json({ message: 'Tipo de entrega no encontrado' });
+  tipoEntregaModel.obtenerTipoEntregaPorId(id, (err, tipo) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al obtener el tipo de entrega' });
     }
-    res.status(200).json({ message: 'Tipo de entrega actualizado' });
+    if (!tipo.length) {
+      return res.status(404).json({ error: 'Tipo de entrega no encontrado' });
+    }
+    res.json(tipo);
   });
 };
 
-// Actualizar parcialmente un tipo de entrega (PATCH)
-exports.partialUpdateTipoEntrega = (req, res) => {
+// Eliminar tipo de entrega por id
+const eliminarTipoEntrega = (req, res) => {
   const { id } = req.params;
-  const { nombre } = req.body;
-
-  const sql = 'UPDATE tipo_entrega SET nombre = ? WHERE id_tipo_entrega = ?';
-
-  db.query(sql, [nombre, id], (err, results) => {
-    if (err) return res.status(500).json({ error: 'Error al actualizar parcialmente el tipo de entrega' });
-    if (results.affectedRows === 0) {
-      return res.status(404).json({ message: 'Tipo de entrega no encontrado' });
+  tipoEntregaModel.eliminarTipoEntrega(id, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al eliminar el tipo de entrega' });
     }
-    res.status(200).json({ message: 'Tipo de entrega actualizado parcialmente' });
+    if (result.mensaje === 'Tipo de entrega no encontrado') {
+      return res.status(404).json({ error: result.mensaje });
+    }
+    res.json(result);
   });
 };
 
-// Eliminar un tipo de entrega
-exports.deleteTipoEntrega = (req, res) => {
+// Actualizar tipo de entrega por id
+const actualizarTipoEntrega = (req, res) => {
   const { id } = req.params;
-
-  const sql = 'DELETE FROM tipo_entrega WHERE id_tipo_entrega = ?';
-
-  db.query(sql, [id], (err, results) => {
-    if (err) return res.status(500).json({ error: 'Error al eliminar el tipo de entrega' });
-    if (results.affectedRows === 0) {
-      return res.status(404).json({ message: 'Tipo de entrega no encontrado' });
+  const datosActualizados = req.body;
+  tipoEntregaModel.actualizarTipoEntrega(id, datosActualizados, (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error al actualizar el tipo de entrega' });
     }
-    res.status(200).json({ message: 'Tipo de entrega eliminado' });
+    if (result.mensaje === 'Tipo de entrega no encontrado') {
+      return res.status(404).json({ error: result.mensaje });
+    }
+    res.json(result);
   });
+};
+
+module.exports = {
+  obtenerTiposEntrega,
+  obtenerTipoEntregaPorId,
+  eliminarTipoEntrega,
+  actualizarTipoEntrega,
 };

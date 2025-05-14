@@ -1,63 +1,67 @@
-// controllers/inventarioController.js
-const db = require('../config/db');
+const inventarioModel = require('../models/inventarioModel');
 
-// Obtener todos los inventarios
-exports.getInventarios = (req, res) => {
-  db.query('SELECT * FROM Inventario', (err, results) => {
-    if (err) return res.status(500).json({ error: 'Error al obtener los inventarios' });
-    res.status(200).json(results);
+// Obtener inventarios
+const obtenerInventarios = (req, res) => {
+  inventarioModel.obtenerInventarios((err, inventarios) => {
+    if (err) {
+      console.error('Error al obtener inventarios:', err);
+      return res.status(500).json({ error: 'Error al obtener los inventarios' });
+    }
+    res.json(inventarios);
   });
 };
 
-// Obtener inventario por ID
-exports.getInventarioById = (req, res) => {
-  const { id } = req.params;
-  db.query('SELECT * FROM Inventario WHERE id_inventario = ?', [id], (err, results) => {
-    if (err) return res.status(500).json({ error: 'Error en la base de datos' });
-    if (results.length === 0) return res.status(404).json({ mensaje: 'Inventario no encontrado' });
-    res.status(200).json(results[0]);
-  });
-};
-
-// Crear nuevo inventario
-exports.createInventario = (req, res) => {
+// Agregar nuevo inventario
+const agregarInventario = (req, res) => {
   const { id_producto, id_sucursal, stock } = req.body;
-  const sql = 'INSERT INTO Inventario (id_producto, id_sucursal, stock) VALUES (?, ?, ?)';
-  db.query(sql, [id_producto, id_sucursal, stock], (err, result) => {
-    if (err) return res.status(500).json({ error: 'Error al crear inventario' });
-    res.status(201).json({ mensaje: 'Inventario creado', id_inventario: result.insertId });
+
+  if (!id_producto || !id_sucursal || !stock) {
+    return res.status(400).json({ error: 'Faltan datos en la solicitud' });
+  }
+
+  inventarioModel.agregarInventario({ id_producto, id_sucursal, stock }, (err, result) => {
+    if (err) {
+      console.error('Error al agregar el inventario:', err);
+      return res.status(500).json({ error: 'Error al agregar el inventario' });
+    }
+    res.status(201).json({ message: 'Inventario agregado con éxito', inventarioId: result.insertId });
   });
 };
 
-// Actualizar completamente un inventario (PUT)
-exports.updateInventario = (req, res) => {
+// Actualizar inventario
+const actualizarInventario = (req, res) => {
   const { id } = req.params;
-  const { id_producto, id_sucursal, stock } = req.body;
-  const sql = 'UPDATE Inventario SET id_producto = ?, id_sucursal = ?, stock = ? WHERE id_inventario = ?';
-  db.query(sql, [id_producto, id_sucursal, stock, id], (err, result) => {
-    if (err) return res.status(500).json({ error: 'Error al actualizar inventario' });
-    if (result.affectedRows === 0) return res.status(404).json({ mensaje: 'Inventario no encontrado' });
-    res.status(200).json({ mensaje: 'Inventario actualizado' });
-  });
-};
+  const { stock } = req.body;
 
-// Actualización parcial (PATCH)
-exports.partialUpdateInventario = (req, res) => {
-  const { id } = req.params;
-  const campos = req.body;
-  db.query('UPDATE Inventario SET ? WHERE id_inventario = ?', [campos, id], (err, result) => {
-    if (err) return res.status(500).json({ error: 'Error al actualizar parcialmente' });
-    if (result.affectedRows === 0) return res.status(404).json({ mensaje: 'Inventario no encontrado' });
-    res.status(200).json({ mensaje: 'Inventario actualizado parcialmente' });
+  if (!stock) {
+    return res.status(400).json({ error: 'Debe proporcionar el nuevo stock' });
+  }
+
+  inventarioModel.actualizarInventario(id, { stock }, (err, result) => {
+    if (err) {
+      console.error('Error al actualizar el inventario:', err);
+      return res.status(500).json({ error: 'Error al actualizar el inventario' });
+    }
+    res.status(200).json({ message: 'Inventario actualizado con éxito' });
   });
 };
 
 // Eliminar inventario
-exports.deleteInventario = (req, res) => {
+const eliminarInventario = (req, res) => {
   const { id } = req.params;
-  db.query('DELETE FROM Inventario WHERE id_inventario = ?', [id], (err, result) => {
-    if (err) return res.status(500).json({ error: 'Error al eliminar inventario' });
-    if (result.affectedRows === 0) return res.status(404).json({ mensaje: 'Inventario no encontrado' });
-    res.status(200).json({ mensaje: 'Inventario eliminado' });
+
+  inventarioModel.eliminarInventario(id, (err, result) => {
+    if (err) {
+      console.error('Error al eliminar el inventario:', err);
+      return res.status(500).json({ error: 'Error al eliminar el inventario' });
+    }
+    res.status(200).json({ message: 'Inventario eliminado con éxito' });
   });
+};
+
+module.exports = {
+  obtenerInventarios,
+  agregarInventario,
+  actualizarInventario,
+  eliminarInventario
 };

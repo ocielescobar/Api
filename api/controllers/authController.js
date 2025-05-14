@@ -19,9 +19,9 @@ exports.login = (req, res) => {
   });
 };
 
-// Método GET para obtener datos del usuario
+// obtener datos de usuario
 exports.getUser = (req, res) => {
-  const { correo } = req.query;  // Usamos query para recibir el correo del usuario
+  const { correo } = req.query;  //para recibir el correo del usuario
 
   if (!correo) {
     return res.status(400).json({ error: 'Falta correo' });
@@ -32,7 +32,7 @@ exports.getUser = (req, res) => {
     if (err) return res.status(500).json({ error: 'Error en la base de datos' });
 
     if (results.length > 0) {
-      return res.status(200).json(results[0]);  // Retorna los datos del usuario
+      return res.status(200).json(results[0]);  // devuelve datos del usuario
     } else {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
