@@ -3,20 +3,18 @@ const db = require('../config/db');
 // Obtener productos
 const obtenerProductos = (callback) => {
   const sql = 'SELECT * FROM Producto';
-  console.log('Ejecutando consulta SQL:', sql);  // para ver que consulta se esta ejecutando
   db.query(sql, (err, results) => {
     if (err) {
-      console.error('Error al ejecutar la consulta:', err);  // capturar el error 
-      return callback(err);  // Pasar el error al controlador
+      console.error('Error al ejecutar la consulta:', err);
+      return callback(err);
     }
-    callback(null, results);  // Retornar los resultados si no hay error
+    callback(null, results);
   });
 };
 
 // Obtener producto por id
 const obtenerProductoPorId = (id, callback) => {
   const sql = 'SELECT * FROM Producto WHERE id_producto = ?';
-  console.log('Ejecutando consulta SQL:', sql, id);
   db.query(sql, [id], (err, results) => {
     if (err) {
       console.error('Error al ejecutar la consulta:', err);
@@ -26,12 +24,11 @@ const obtenerProductoPorId = (id, callback) => {
   });
 };
 
-// Agregar producto
+// Agregar producto (incluye stock)
 const agregarProducto = (producto, callback) => {
-  const { codigo_producto, nombre, marca, categoria, descripcion, precio } = producto;
-  const sql = 'INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, precio) VALUES (?, ?, ?, ?, ?, ?)';
-  console.log('Ejecutando consulta SQL:', sql);
-  db.query(sql, [codigo_producto, nombre, marca, categoria, descripcion, precio], (err, results) => {
+  const { codigo_producto, nombre, marca, categoria, descripcion, precio, stock } = producto;
+  const sql = 'INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, precio, stock) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  db.query(sql, [codigo_producto, nombre, marca, categoria, descripcion, precio, stock], (err, results) => {
     if (err) {
       console.error('Error al ejecutar la consulta de inserción:', err);
       return callback(err);
@@ -43,7 +40,6 @@ const agregarProducto = (producto, callback) => {
 // Eliminar producto por id
 const eliminarProducto = (id, callback) => {
   const sql = 'DELETE FROM Producto WHERE id_producto = ?';
-  console.log('Ejecutando consulta SQL:', sql, id);
   db.query(sql, [id], (err, results) => {
     if (err) {
       console.error('Error al ejecutar la consulta de eliminación:', err);
@@ -53,14 +49,13 @@ const eliminarProducto = (id, callback) => {
   });
 };
 
-// Actualizar producto por id
+// Actualizar producto por id (ahora también incluye stock)
 const actualizarProducto = (id, producto, callback) => {
-  const { codigo_producto, nombre, marca, categoria, descripcion, precio } = producto;
+  const { codigo_producto, nombre, marca, categoria, descripcion, precio, stock } = producto;
 
-  // Verificar que campos fueron proporcionados
   let updateFields = [];
   let values = [];
-  
+
   if (codigo_producto) {
     updateFields.push('codigo_producto = ?');
     values.push(codigo_producto);
@@ -85,12 +80,14 @@ const actualizarProducto = (id, producto, callback) => {
     updateFields.push('precio = ?');
     values.push(precio);
   }
+  if (stock != null) {
+    updateFields.push('stock = ?');
+    values.push(stock);
+  }
 
-  // Añadir el id al final del resultado
   values.push(id);
 
   const sql = `UPDATE Producto SET ${updateFields.join(', ')} WHERE id_producto = ?`;
-  console.log('Ejecutando consulta SQL:', sql);
   db.query(sql, values, (err, results) => {
     if (err) {
       console.error('Error al ejecutar la consulta de actualización:', err);

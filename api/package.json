@@ -11,10 +11,12 @@
   "type": "commonjs",
   "description": "Este proyecto es una API REST básica que permite realizar un **login** de usuarios a través de un endpoint conectado a una base de datos MySQL. El código está organizado de manera modular para facilitar su mantenimiento y escalabilidad.",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "mysql": "^2.18.1",
-    "mysql2": "^3.14.0"
+    "mysql2": "^3.14.0",
+    "transbank-sdk": "^6.0.0"
   },
   "repository": {
     "type": "git",

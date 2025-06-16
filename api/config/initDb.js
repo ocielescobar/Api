@@ -68,7 +68,8 @@ CREATE TABLE IF NOT EXISTS Producto (
     marca VARCHAR(50),
     categoria VARCHAR(50),
     descripcion TEXT,
-    precio DECIMAL(10,2)
+    precio DECIMAL(10,2),
+    stock INT
 );
 
 CREATE TABLE IF NOT EXISTS Inventario (
@@ -123,6 +124,26 @@ CREATE TABLE IF NOT EXISTS Carrito (
     cantidad INT,
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario),
     FOREIGN KEY (id_producto) REFERENCES Producto(id_producto)
+);
+CREATE TABLE IF NOT EXISTS BoletaProducto (
+    id_boleta INT,
+    id_producto INT,
+    cantidad INT,
+    precio_unitario DECIMAL(10,2),
+    FOREIGN KEY (id_boleta) REFERENCES Boleta(id_boleta),
+    FOREIGN KEY (id_producto) REFERENCES Producto(id_producto)
+);
+CREATE TABLE IF NOT EXISTS transacciones_webpay (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token VARCHAR(255) NOT NULL,
+  id_pedido INT NOT NULL,
+  autorizacion_code VARCHAR(20),
+  response_code INT,
+  amount INT,
+  card_number VARCHAR(20),
+  status VARCHAR(50),
+  fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_pedido) REFERENCES Pedido(id_pedido)
 );
 `;
 

@@ -12,17 +12,18 @@ INSERT INTO Usuario (nombre, correo, contrasena, rut, rol, fecha) VALUES
 ('Jorge Fuentes', 'jorge.fuentes@example.com', 'fuentes789', '12345678-0', 'cliente', NOW());
 
 //poblar producto
-INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, precio) VALUES
-('P001', 'Papel Higiénico Doble Hoja', 'Elite', 'Higiene', 'Papel suave y resistente, 30 metros.', 2990),
-('P002', 'Jabón Líquido Antibacterial', 'Lysol', 'Higiene', 'Jabón líquido con dispensador, 500 ml.', 3290),
-('P003', 'Detergente Ropa Líquido', 'Ariel', 'Limpieza', 'Detergente para ropa blanca y color, 3 L.', 8490),
-('P004', 'Toallas de Papel', 'Scott', 'Higiene', 'Toallas de papel absorbentes, paquete de 2.', 1890),
-('P005', 'Desinfectante Multiusos', 'Virutex', 'Limpieza', 'Desinfectante para superficies, 1 L.', 4590),
-('P006', 'Cloro Gel', 'Clorox', 'Limpieza', 'Cloro en gel, fragancia lavanda, 900 ml.', 2790),
-('P007', 'Limpiavidrios', 'Mr. Músculo', 'Limpieza', 'Spray para vidrios y espejos, 500 ml.', 2690),
-('P008', 'Servilletas de Papel', 'Elite', 'Higiene', '100 servilletas de papel blancas.', 990),
-('P009', 'Bolsas de Basura 80L', 'Virutex', 'Aseo', 'Paquete de 10 bolsas resistentes.', 3490),
-('P010', 'Guantes de Látex', 'Mapa', 'Protección', 'Guantes reutilizables talla M.', 1990);
+INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, precio, stock_disponible) VALUES
+('P001', 'Papel Higiénico Doble Hoja', 'Elite', 'Higiene', 'Papel suave y resistente, 30 metros.', 2990, 10),
+('P002', 'Jabón Líquido Antibacterial', 'Lysol', 'Higiene', 'Jabón líquido con dispensador, 500 ml.', 3290, 10),
+('P003', 'Detergente Ropa Líquido', 'Ariel', 'Limpieza', 'Detergente para ropa blanca y color, 3 L.', 8490, 10),
+('P004', 'Toallas de Papel', 'Scott', 'Higiene', 'Toallas de papel absorbentes, paquete de 2.', 1890, 10),
+('P005', 'Desinfectante Multiusos', 'Virutex', 'Limpieza', 'Desinfectante para superficies, 1 L.', 4590, 10),
+('P006', 'Cloro Gel', 'Clorox', 'Limpieza', 'Cloro en gel, fragancia lavanda, 900 ml.', 2790, 10),
+('P007', 'Limpiavidrios', 'Mr. Músculo', 'Limpieza', 'Spray para vidrios y espejos, 500 ml.', 2690, 10),
+('P008', 'Servilletas de Papel', 'Elite', 'Higiene', '100 servilletas de papel blancas.', 990, 10),
+('P009', 'Bolsas de Basura 80L', 'Virutex', 'Aseo', 'Paquete de 10 bolsas resistentes.', 3490, 10),
+('P010', 'Guantes de Látex', 'Mapa', 'Protección', 'Guantes reutilizables talla M.', 1990, 10);
+
 
 //poblar sucursal
 INSERT INTO sucursal (id_sucursal, nombre, direccion) VALUES
