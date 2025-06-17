@@ -297,7 +297,15 @@ VALUES
   (2, 'Retiro en tienda'),
   (3, 'Punto de recogida');
 
+-- poblar metodo_pago
+INSERT INTO metodo_pago (nombre) VALUES
+('Transferencia Bancaria'),
+('Webpay'),
+('Pago en efectivo');
 
+--Dejar marca como sin marca por defecto
+ALTER TABLE Producto
+MODIFY marca VARCHAR(255) DEFAULT 'Sin marca';
 ## 🔐 Paso 3: Configuración de variables de entorno
 
 Crea un archivo `.env` en la raíz del proyecto con la siguiente configuración:
@@ -401,6 +409,9 @@ module.exports = router;
 ```bash
 node index.js
 ```
+
+-- Iniciar servidor Front
+npm run serve
 
 2. En Postman, crea una petición:
 
