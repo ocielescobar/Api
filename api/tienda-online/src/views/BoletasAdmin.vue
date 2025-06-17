@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="boletas-admin-container">
     <h2>Boletas Generadas</h2>
 
-    <div v-if="cargando">Cargando boletas...</div>
-    <div v-else-if="error" style="color: red;">{{ error }}</div>
-    <div v-else-if="boletas.length === 0">No hay boletas generadas.</div>
+    <div v-if="cargando" class="cargando">Cargando boletas...</div>
+    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else-if="boletas.length === 0" class="mensaje-vacio">No hay boletas generadas.</div>
 
-    <table v-else border="1" cellpadding="8" style="margin-top: 20px; width: 100%;">
+    <table v-else class="tabla-boletas">
       <thead>
         <tr>
           <th>ID Boleta</th>
@@ -21,13 +21,13 @@
           <td>${{ Number(b.total).toFixed(2) }}</td>
           <td>{{ formatFecha(b.fecha) }}</td>
           <td>
-            <router-link :to="`/boleta/${b.id_pedido}`">Ver Detalle</router-link>
+            <router-link class="btn-detalle" :to="`/boleta/${b.id_pedido}`">Ver Detalle</router-link>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <button @click="$router.push('/productos')" style="margin-top: 20px;">Volver</button>
+    <button class="btn-volver" @click="$router.push('/productos')">Volver</button>
   </div>
 </template>
 
@@ -49,15 +49,12 @@ export default {
       return;
     }
 
-    console.log("🛂 Usuario administrador:", usuario);
-
     fetch("http://localhost:3000/api/boleta/debug/pedidos2")
       .then(res => {
         if (!res.ok) throw new Error("Error al obtener boletas");
         return res.json();
       })
       .then(data => {
-        console.log("✅ Boletas pagadas:", data);
         this.boletas = Array.isArray(data) ? data : [];
         this.cargando = false;
       })
@@ -76,14 +73,4 @@ export default {
 };
 </script>
 
-<style scoped>
-h2 {
-  margin-bottom: 20px;
-}
-th {
-  background-color: #f2f2f2;
-}
-td, th {
-  text-align: center;
-}
-</style>
+<style src="@/assets/css/boletasadmin.css"></style>

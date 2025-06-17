@@ -1,30 +1,32 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div>
+  <div class="catalogo-container">
     <h1>Catálogo de Productos</h1>
+
     <div
+      class="producto-card"
       v-for="producto in productos"
       :key="producto.id_producto"
-      style="border: 1px solid gray; padding: 10px; margin: 10px;"
     >
-      <p><strong>{{ producto.nombre }}</strong> - ${{ producto.precio }}</p>
-      <p>Stock disponible: {{ producto.stock }}</p>
+      <p class="nombre"><strong>{{ producto.nombre }}</strong></p>
+      <p class="precio">$ {{ producto.precio }}</p>
+      <p class="stock">Stock disponible: {{ producto.stock }}</p>
 
-      <input
-        type="number"
-        v-model.number="producto.cantidadDeseada"
-        :max="producto.stock"
-        min="1"
-        style="width: 60px; margin-right: 10px;"
-        :disabled="producto.stock <= 0"
-      />
-
-      <button
-        @click="agregarAlCarrito(producto)"
-        :disabled="producto.stock <= 0 || (producto.cantidadDeseada || 1) > producto.stock"
-      >
-        Agregar al carrito
-      </button>
+      <div class="acciones">
+        <input
+          type="number"
+          v-model.number="producto.cantidadDeseada"
+          :max="producto.stock"
+          min="1"
+          :disabled="producto.stock <= 0"
+        />
+        <button
+          @click="agregarAlCarrito(producto)"
+          :disabled="producto.stock <= 0 || (producto.cantidadDeseada || 1) > producto.stock"
+        >
+          Agregar al carrito
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -78,7 +80,6 @@ export default {
         .then(res => res.json())
         .then(data => {
           alert(data.message || "Producto agregado");
-
           if (producto.stock >= cantidad) {
             producto.stock -= cantidad;
           }
@@ -91,8 +92,10 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.cargarProductos(); // 🔁 fuerza recarga al entrar a la vista
+      vm.cargarProductos();
     });
   }
 };
 </script>
+
+<style src="@/assets/css/producto.css"></style>

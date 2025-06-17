@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="admin-container">
     <h1>Gestión de Productos</h1>
 
-    <table border="1" cellpadding="8" style="width: 100%; text-align: left;">
+    <table class="tabla-productos">
       <thead>
         <tr>
           <th>Nombre</th>
@@ -21,32 +21,30 @@
               type="number"
               v-model.number="producto.nuevoStock"
               min="0"
-              style="width: 80px;"
+              class="stock-input"
             />
           </td>
           <td>
-            <button @click="actualizarStock(producto)">Guardar</button>
+            <button @click="actualizarStock(producto)" class="btn-guardar">Guardar</button>
           </td>
           <td>
-            <button @click="eliminarProducto(producto)">Eliminar</button>
+            <button @click="eliminarProducto(producto)" class="btn-eliminar">Eliminar</button>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <!-- Botón para mostrar formulario nuevo producto -->
-    <button @click="mostrarFormularioNuevo = true" style="margin-top: 20px;">Agregar nuevo producto</button>
+    <button @click="mostrarFormularioNuevo = true" class="btn-agregar">Agregar nuevo producto</button>
 
-    <!-- Formulario simplificado -->
-    <div v-if="mostrarFormularioNuevo" style="margin-top: 20px; border: 1px solid gray; padding: 10px;">
+    <div v-if="mostrarFormularioNuevo" class="formulario-nuevo">
       <h3>Nuevo Producto</h3>
       <input v-model="nuevoProducto.nombre" placeholder="Nombre" />
       <input v-model.number="nuevoProducto.precio" type="number" placeholder="Precio" />
       <input v-model.number="nuevoProducto.stock" type="number" placeholder="Stock" />
 
-      <div style="margin-top: 10px;">
-        <button @click="guardarNuevoProducto">Guardar</button>
-        <button @click="mostrarFormularioNuevo = false">Cancelar</button>
+      <div class="form-botones">
+        <button @click="guardarNuevoProducto" class="btn-guardar">Guardar</button>
+        <button @click="mostrarFormularioNuevo = false" class="btn-cancelar">Cancelar</button>
       </div>
     </div>
   </div>
@@ -136,43 +134,45 @@ export default {
         });
     },
     guardarNuevoProducto() {
-  const p = this.nuevoProducto;
+      const p = this.nuevoProducto;
 
-  if (!p.nombre || !p.precio || !p.stock) {
-    alert("Completa los campos obligatorios: nombre, precio y stock.");
-    return;
-  }
-
-  fetch("http://localhost:3000/api/productos", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(p)
-  })
-    .then(async res => {
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Error al agregar producto");
+      if (!p.nombre || !p.precio || !p.stock) {
+        alert("Completa los campos obligatorios: nombre, precio y stock.");
+        return;
       }
 
-      alert(data.message || "Producto agregado");
-      this.productos.push({
-        ...p,
-        id_producto: data.productoId,
-        nuevoStock: p.stock
-      });
-      this.mostrarFormularioNuevo = false;
-      this.nuevoProducto = {
-        nombre: '',
-        precio: '',
-        stock: ''
-      };
-    })
-    .catch(err => {
-      console.error("Error al agregar producto:", err);
-      alert(err.message || "No se pudo agregar el producto.");
-    });
-}
+      fetch("http://localhost:3000/api/productos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(p)
+      })
+        .then(async res => {
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || "Error al agregar producto");
+          }
+
+          alert(data.message || "Producto agregado");
+          this.productos.push({
+            ...p,
+            id_producto: data.productoId,
+            nuevoStock: p.stock
+          });
+          this.mostrarFormularioNuevo = false;
+          this.nuevoProducto = {
+            nombre: '',
+            precio: '',
+            stock: ''
+          };
+        })
+        .catch(err => {
+          console.error("Error al agregar producto:", err);
+          alert(err.message || "No se pudo agregar el producto.");
+        });
+    }
   }
 };
 </script>
+
+<style src="@/assets/css/adminproductos.css"></style>

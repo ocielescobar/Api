@@ -1,20 +1,31 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div>
+  <div class="carrito-container">
     <h2>Carrito de Compras</h2>
-    <div v-if="carrito.length === 0">No hay productos en el carrito.</div>
+
+    <div v-if="carrito.length === 0" class="mensaje-vacio">
+      No hay productos en el carrito.
+    </div>
+
     <div v-else>
       <div
+        class="item-carrito"
         v-for="item in carrito"
         :key="item.id_producto"
-        style="border: 1px solid #ccc; padding: 10px; margin: 10px;"
       >
-        <p><strong>{{ item.nombre }}</strong> - ${{ item.precio }} x {{ item.cantidad }} = ${{ item.precio * item.cantidad }}</p>
-        <button @click="cambiarCantidad(item.id_producto, item.cantidad - 1)" :disabled="item.cantidad <= 1">-</button>
-        <button @click="cambiarCantidad(item.id_producto, item.cantidad + 1)">+</button>
-        <button @click="eliminarProducto(item.id_producto)">Eliminar</button>
+        <p class="detalle">
+          <strong>{{ item.nombre }}</strong> - ${{ item.precio }} x {{ item.cantidad }} = <strong>${{ item.precio * item.cantidad }}</strong>
+        </p>
+
+        <div class="acciones">
+          <button @click="cambiarCantidad(item.id_producto, item.cantidad - 1)" :disabled="item.cantidad <= 1">-</button>
+          <span class="cantidad">{{ item.cantidad }}</span>
+          <button @click="cambiarCantidad(item.id_producto, item.cantidad + 1)">+</button>
+          <button class="eliminar" @click="eliminarProducto(item.id_producto)">Eliminar</button>
+        </div>
       </div>
-      <div style="text-align: center; margin-top: 20px;">
+
+      <div class="confirmar-compra">
         <button @click="confirmarCompra">Confirmar compra</button>
       </div>
     </div>
@@ -81,28 +92,24 @@ export default {
         });
     },
     confirmarCompra() {
-  fetch("http://localhost:3000/api/boleta/confirmar", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id_usuario: this.idUsuario })
-  })
-    .then(res => res.json())
-    .then(data => {
-      console.log("Respuesta confirmar:", data);
-
-      const idPedido = data.id_pedido;
-
-      // ✅ Guarda el ID por si lo necesitas en otra parte
-      localStorage.setItem("ultimoPedido", idPedido);
-
-      // ✅ Redirige a la vista del pedido
-      this.$router.push(`/pedido/${idPedido}`);
-    })
-    .catch(err => {
-      console.error("Error al confirmar compra:", err);
-      alert("Error: " + err.message);
-    });
-}
+      fetch("http://localhost:3000/api/boleta/confirmar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id_usuario: this.idUsuario })
+      })
+        .then(res => res.json())
+        .then(data => {
+          const idPedido = data.id_pedido;
+          localStorage.setItem("ultimoPedido", idPedido);
+          this.$router.push(`/pedido/${idPedido}`);
+        })
+        .catch(err => {
+          console.error("Error al confirmar compra:", err);
+          alert("Error: " + err.message);
+        });
+    }
   }
 };
 </script>
+
+<style src="@/assets/css/carrito.css"></style>

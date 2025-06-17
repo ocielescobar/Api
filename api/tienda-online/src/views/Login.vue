@@ -1,5 +1,6 @@
+<style src="@/assets/css/login.css"></style>
 <template>
-  <div class="login">
+  <div class="login-container">
     <h2>Iniciar Sesión</h2>
     <form @submit.prevent="login">
       <div>

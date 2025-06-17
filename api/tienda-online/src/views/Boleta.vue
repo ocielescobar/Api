@@ -1,18 +1,18 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div>
+  <div class="boleta-container">
     <h2>Boleta Generada</h2>
 
-    <div v-if="cargando">
+    <div v-if="cargando" class="mensaje-cargando">
       <p>Cargando datos de la boleta...</p>
     </div>
 
-    <div v-else-if="error">
-      <p style="color: red;">{{ error }}</p>
+    <div v-else-if="error" class="mensaje-error">
+      <p>{{ error }}</p>
     </div>
 
     <div v-else>
-      <table border="1" cellpadding="8" style="margin-top: 10px;">
+      <table class="tabla-boleta">
         <thead>
           <tr>
             <th>Producto</th>
@@ -31,9 +31,9 @@
         </tbody>
       </table>
 
-      <h3 style="margin-top: 20px;">Total: ${{ calcularTotal().toFixed(2) }}</h3>
+      <h3 class="total-final">Total: ${{ calcularTotal().toFixed(2) }}</h3>
 
-      <button @click="$router.push('/productos')" style="margin-top: 20px;">Volver a la tienda</button>
+      <button class="btn-volver" @click="$router.push('/productos')">Volver a la tienda</button>
     </div>
   </div>
 </template>
@@ -59,7 +59,6 @@ export default {
         this.boleta = data;
         this.cargando = false;
 
-        // Guardar en historial localStorage
         let historial = JSON.parse(localStorage.getItem("boletasGuardadas")) || [];
         if (!historial.includes(idPedido)) {
           historial.push(idPedido);
@@ -81,24 +80,4 @@ export default {
 }
 </script>
 
-<style scoped>
-h2 {
-  margin-bottom: 20px;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th {
-  background-color: #f2f2f2;
-}
-td, th {
-  text-align: center;
-}
-button {
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-}
-</style>
+<style src="@/assets/css/boleta.css"></style>

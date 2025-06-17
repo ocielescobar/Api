@@ -1,0 +1,75 @@
+.catalogo-container {
+  background-color: #111;
+  color: #FFD700;
+  padding: 40px;
+  min-height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.catalogo-container h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #FFD700;
+}
+
+.producto-card {
+  background-color: #1e1e1e;
+  border: 1px solid #FFD700;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px auto;
+  max-width: 500px;
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.producto-card:hover {
+  transform: scale(1.02);
+}
+
+.nombre {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.precio, .stock {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.acciones input {
+  width: 60px;
+  padding: 6px;
+  border: none;
+  border-radius: 6px;
+  background-color: #2c2c2c;
+  color: #fff;
+  text-align: center;
+}
+
+.acciones button {
+  padding: 8px 16px;
+  border: none;
+  background-color: #FFD700;
+  color: #111;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.acciones button:hover {
+  background-color: #e6c200;
+}
+
+.acciones button:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
