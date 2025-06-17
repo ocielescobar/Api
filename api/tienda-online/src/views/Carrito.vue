@@ -88,19 +88,15 @@ export default {
   })
     .then(res => res.json())
     .then(data => {
-      const id = data.id_pedido;
-      const monto = data.total;
+      console.log("Respuesta confirmar:", data);
 
-      // Aquí iniciar Webpay
-      return fetch("http://localhost:3000/webpay/iniciar-transaccion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id_pedido: id, monto })
-      }).then(res => res.json());
-    })
-    .then(webpay => {
-      // Redirige al portal de pago
-      window.location.href = `${webpay.url}?token_ws=${webpay.token}`;
+      const idPedido = data.id_pedido;
+
+      // ✅ Guarda el ID por si lo necesitas en otra parte
+      localStorage.setItem("ultimoPedido", idPedido);
+
+      // ✅ Redirige a la vista del pedido
+      this.$router.push(`/pedido/${idPedido}`);
     })
     .catch(err => {
       console.error("Error al confirmar compra:", err);

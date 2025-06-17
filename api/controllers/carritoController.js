@@ -16,32 +16,42 @@ const obtenerCarrito = (req, res) => {
 
 // Agregar un producto al carrito (sin descontar stock)
 const agregarAlCarrito = (req, res) => {
-  const { id_usuario, id_producto, cantidad } = req.body;
+  const { id_usuario, id_producto, cantidad = 1 } = req.body;
 
-  if (!id_usuario || !id_producto || !cantidad) {
-    return res.status(400).json({ error: 'Faltan datos en la solicitud' });
+  if (!id_usuario || !id_producto) {
+    return res.status(400).json({ error: 'Faltan datos requeridos' });
   }
 
-  const checkStockSql = 'SELECT stock FROM Producto WHERE id_producto = ?';
-  db.query(checkStockSql, [id_producto], (err, stockResult) => {
-    if (err || stockResult.length === 0) {
-      return res.status(500).json({ error: 'Error al verificar stock' });
+  // Verificar si ya existe el producto en el carrito
+  const checkSql = `
+    SELECT cantidad FROM Carrito WHERE id_usuario = ? AND id_producto = ?
+  `;
+
+  db.query(checkSql, [id_usuario, id_producto], (err, results) => {
+    if (err) return res.status(500).json({ error: 'Error en la base de datos' });
+
+    if (results.length > 0) {
+      // Ya existe → actualizamos la cantidad
+      const nuevaCantidad = results[0].cantidad + cantidad;
+      const updateSql = `
+        UPDATE Carrito SET cantidad = ? WHERE id_usuario = ? AND id_producto = ?
+      `;
+      db.query(updateSql, [nuevaCantidad, id_usuario, id_producto], (err2) => {
+        if (err2) return res.status(500).json({ error: 'Error al actualizar cantidad' });
+        return res.status(200).json({ message: 'Cantidad actualizada en el carrito' });
+      });
+
+    } else {
+      // No existe → insertamos nuevo
+      const insertSql = `
+        INSERT INTO Carrito (id_usuario, id_producto, cantidad)
+        VALUES (?, ?, ?)
+      `;
+      db.query(insertSql, [id_usuario, id_producto, cantidad], (err3) => {
+        if (err3) return res.status(500).json({ error: 'Error al agregar al carrito' });
+        return res.status(200).json({ message: 'Producto agregado al carrito' });
+      });
     }
-
-    const stockDisponible = stockResult[0].stock;
-
-    if (cantidad > stockDisponible) {
-      return res.status(400).json({ error: 'No hay stock suficiente' });
-    }
-
-    // Agregar al carrito (sin tocar el stock)
-    carritoModel.agregarAlCarrito(id_usuario, id_producto, cantidad, (err) => {
-      if (err) {
-        return res.status(500).json({ error: 'Error al agregar al carrito' });
-      }
-
-      res.status(201).json({ message: 'Producto agregado al carrito con éxito' });
-    });
   });
 };
 

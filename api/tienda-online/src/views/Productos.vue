@@ -9,9 +9,19 @@
     >
       <p><strong>{{ producto.nombre }}</strong> - ${{ producto.precio }}</p>
       <p>Stock disponible: {{ producto.stock }}</p>
-      <button
-        @click="agregarAlCarrito(producto.id_producto)"
+
+      <input
+        type="number"
+        v-model.number="producto.cantidadDeseada"
+        :max="producto.stock"
+        min="1"
+        style="width: 60px; margin-right: 10px;"
         :disabled="producto.stock <= 0"
+      />
+
+      <button
+        @click="agregarAlCarrito(producto)"
+        :disabled="producto.stock <= 0 || (producto.cantidadDeseada || 1) > producto.stock"
       >
         Agregar al carrito
       </button>
@@ -36,32 +46,41 @@ export default {
     }
 
     this.idUsuario = user.id_usuario;
-
-    fetch("http://localhost:3000/api/productos")
-      .then(response => response.json())
-      .then(data => this.productos = data)
-      .catch(err => {
-        console.error("Fallo al obtener productos:", err);
-        alert("No se pudo cargar el catálogo");
-      });
+    this.cargarProductos();
   },
   methods: {
-    agregarAlCarrito(idProducto) {
+    cargarProductos() {
+      fetch("http://localhost:3000/api/productos")
+        .then(response => response.json())
+        .then(data => {
+          this.productos = data.map(p => ({
+            ...p,
+            cantidadDeseada: 1
+          }));
+        })
+        .catch(err => {
+          console.error("Fallo al obtener productos:", err);
+          alert("No se pudo cargar el catálogo");
+        });
+    },
+    agregarAlCarrito(producto) {
+      const cantidad = producto.cantidadDeseada || 1;
+
       fetch("http://localhost:3000/api/carrito/agregar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id_usuario: this.idUsuario,
-          id_producto: idProducto,
-          cantidad: 1
+          id_producto: producto.id_producto,
+          cantidad: cantidad
         })
       })
         .then(res => res.json())
         .then(data => {
           alert(data.message || "Producto agregado");
-          const producto = this.productos.find(p => p.id_producto === idProducto);
-          if (producto && producto.stock > 0) {
-            producto.stock -= 1;
+
+          if (producto.stock >= cantidad) {
+            producto.stock -= cantidad;
           }
         })
         .catch(err => {
@@ -69,6 +88,11 @@ export default {
           alert("Error al agregar al carrito");
         });
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.cargarProductos(); // 🔁 fuerza recarga al entrar a la vista
+    });
   }
 };
 </script>

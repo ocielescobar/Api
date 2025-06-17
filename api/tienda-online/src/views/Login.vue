@@ -43,18 +43,19 @@ export default {
         const data = await response.json();
 
         if (response.ok) {
-  localStorage.setItem("usuario", JSON.stringify({
-    id_usuario: data.id_usuario, 
-    rol: data.rol
-  }));
-  console.log("Inicio sesión como:", data);
+          // Guardar usuario en localStorage
+          localStorage.setItem("usuario", JSON.stringify({
+            id_usuario: data.id_usuario,
+            rol: data.rol
+          }));
 
+          console.log("Inicio sesión como:", data);
 
-          // Redirigir según el rol
-          if (data.rol === "admin") {
-            this.$router.push("/admin");
+          // ✅ Redirigir según el rol
+          if (data.rol === "admin" || data.rol === "administrador") {
+            this.$router.push("/admin/productos"); // vista exclusiva del administrador
           } else {
-            this.$router.push("/productos");
+            this.$router.push("/productos"); // vista para clientes
           }
         } else {
           this.error = data.message || "Error al iniciar sesión";

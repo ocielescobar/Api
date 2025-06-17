@@ -14,9 +14,9 @@ const sql = `
 CREATE DATABASE IF NOT EXISTS tienda_db;
 USE tienda_db;
 
-CREATE TABLE IF NOT EXISTS Metodo_Pago (
-    id_metodo_pago INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(50)
+CREATE TABLE IF NOT EXISTS metodo_pago (
+  id_metodo_pago INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Estado_Pedido (
@@ -63,11 +63,11 @@ CREATE TABLE IF NOT EXISTS Contacto (
 
 CREATE TABLE IF NOT EXISTS Producto (
     id_producto INT PRIMARY KEY AUTO_INCREMENT,
-    codigo_producto VARCHAR(50),
+    codigo_producto VARCHAR(50) NULL,
     nombre VARCHAR(100),
-    marca VARCHAR(50),
-    categoria VARCHAR(50),
-    descripcion TEXT,
+    marca VARCHAR(50) NULL,
+    categoria VARCHAR(50) NULL,
+    descripcion TEXT NULL,
     precio DECIMAL(10,2),
     stock INT
 );

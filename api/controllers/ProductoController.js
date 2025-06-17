@@ -16,24 +16,42 @@ const obtenerProductos = (req, res) => {
 
 // Agregar producto
 const agregarProducto = (req, res) => {
-  const { codigo_producto, nombre, marca, categoria, descripcion, precio, stock } = req.body;
+  const { nombre, precio, stock } = req.body;
 
-  // Validar datos obligatorios
-  if (!codigo_producto || !nombre || !marca || !categoria || !descripcion || !precio || stock == null) {
+  if (!nombre || precio == null || stock == null) {
     return res.status(400).json({ error: 'Faltan datos en la solicitud' });
   }
 
-  const sql = `
-    INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, precio, stock)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  db.query(sql, [codigo_producto, nombre, marca, categoria, descripcion, precio, stock], (err, result) => {
+  // Comparación insensible a mayúsculas/minúsculas
+  const verificarSql = 'SELECT * FROM Producto WHERE LOWER(nombre) = LOWER(?)';
+  db.query(verificarSql, [nombre], (err, resultados) => {
     if (err) {
-      console.error('Error al agregar el producto:', err);
-      return res.status(500).json({ error: 'Error al agregar el producto' });
+      console.error('Error al verificar existencia del producto:', err);
+      return res.status(500).json({ error: 'Error al verificar producto existente' });
     }
-    res.status(201).json({ message: 'Producto agregado con éxito', productoId: result.insertId });
+
+    if (resultados.length > 0) {
+      return res.status(400).json({ error: 'Ya existe un producto con ese nombre' });
+    }
+
+    // Si no existe, lo insertamos con campos por defecto
+    const codigo = `P${Date.now()}`;
+    const insertarSql = `
+      INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, precio, stock)
+      VALUES (?, ?, '', '', '', ?, ?)
+    `;
+
+    db.query(insertarSql, [codigo, nombre, precio, stock], (err, result) => {
+      if (err) {
+        console.error('Error al agregar el producto:', err);
+        return res.status(500).json({ error: 'Error al agregar el producto' });
+      }
+
+      res.status(201).json({
+        message: 'Producto agregado con éxito',
+        productoId: result.insertId
+      });
+    });
   });
 };
 
@@ -57,23 +75,33 @@ const obtenerProductoPorId = (req, res) => {
 // Eliminar producto por ID
 const eliminarProducto = (req, res) => {
   const { id } = req.params;
-  const sql = 'DELETE FROM Producto WHERE id_producto = ?';
 
-  db.query(sql, [id], (err, result) => {
+  const eliminarInventario = 'DELETE FROM Inventario WHERE id_producto = ?';
+  const eliminarProducto = 'DELETE FROM Producto WHERE id_producto = ?';
+
+  db.query(eliminarInventario, [id], (err) => {
     if (err) {
-      console.error('Error al eliminar el producto:', err);
-      return res.status(500).json({ error: 'Error al eliminar el producto' });
+      console.error('Error al eliminar del inventario:', err);
+      return res.status(500).json({ error: 'Error al eliminar dependencias del producto' });
     }
-    res.status(200).json({ message: 'Producto eliminado con éxito' });
+
+    db.query(eliminarProducto, [id], (err) => {
+      if (err) {
+        console.error('Error al eliminar el producto:', err);
+        return res.status(500).json({ error: 'Error al eliminar el producto' });
+      }
+
+      res.status(200).json({ message: 'Producto eliminado con éxito' });
+    });
   });
 };
+
 
 // Actualizar producto por ID
 const actualizarProducto = (req, res) => {
   const { id } = req.params;
   const { codigo_producto, nombre, marca, categoria, descripcion, precio, stock } = req.body;
 
-  // Verificar que haya al menos un campo
   if (!codigo_producto && !nombre && !marca && !categoria && !descripcion && !precio && stock == null) {
     return res.status(400).json({ error: 'Debe proporcionar al menos un campo para actualizar' });
   }
@@ -126,10 +154,37 @@ const actualizarProducto = (req, res) => {
   });
 };
 
+// ✅ Actualizar solo el stock de un producto (usado por el admin)
+const actualizarStock = (req, res) => {
+  const { id_producto, nuevo_stock } = req.body;
+
+  console.log('🔍 Recibido para actualizar stock:', req.body); // Ayuda para debug
+
+  if (!id_producto || nuevo_stock == null || isNaN(nuevo_stock)) {
+    return res.status(400).json({ error: 'Faltan datos válidos para actualizar el stock' });
+  }
+
+  const sql = `UPDATE Producto SET stock = ? WHERE id_producto = ?`;
+
+  db.query(sql, [nuevo_stock, id_producto], (err, result) => {
+    if (err) {
+      console.error('Error al actualizar stock:', err);
+      return res.status(500).json({ error: 'Error al actualizar el stock del producto' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Producto no encontrado' });
+    }
+
+    res.status(200).json({ message: 'Stock actualizado con éxito' });
+  });
+};
+
 module.exports = {
   obtenerProductos,
   agregarProducto,
   obtenerProductoPorId,
   eliminarProducto,
-  actualizarProducto
+  actualizarProducto,
+  actualizarStock,
 };

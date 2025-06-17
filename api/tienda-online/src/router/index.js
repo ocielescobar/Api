@@ -24,6 +24,7 @@ const routes = [
   { path: '/mis-compras', name: 'MisCompras', component: () => import('@/views/MisCompras.vue') },
   { path: '/admin/boletas', component: BoletasAdmin, meta: { requiresAdmin: true } },
   { path: '/admin', redirect: '/admin/boletas' },
+  { path: '/admin/productos', component: () => import('@/views/AdminProductos.vue'), meta: { requiresAuth: true, requiresAdmin: true }},
 ];
 
 const router = createRouter({

@@ -1,4 +1,4 @@
-//poblar usuario
+-- poblar usuario
 INSERT INTO Usuario (nombre, correo, contrasena, rut, rol, fecha) VALUES
 ('Ana López', 'ana.lopez@example.com', 'pass123', '11111111-1', 'cliente', NOW()),
 ('Carlos Díaz', 'carlos.diaz@example.com', 'carlospass', '22222222-2', 'cliente', NOW()),
@@ -11,8 +11,8 @@ INSERT INTO Usuario (nombre, correo, contrasena, rut, rol, fecha) VALUES
 ('Isabel Torres', 'isabel.torres@example.com', 'torres456', '99999999-9', 'cliente', NOW()),
 ('Jorge Fuentes', 'jorge.fuentes@example.com', 'fuentes789', '12345678-0', 'cliente', NOW());
 
-//poblar producto
-INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, precio, stock_disponible) VALUES
+-- poblar producto
+INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, precio, stock) VALUES
 ('P001', 'Papel Higiénico Doble Hoja', 'Elite', 'Higiene', 'Papel suave y resistente, 30 metros.', 2990, 10),
 ('P002', 'Jabón Líquido Antibacterial', 'Lysol', 'Higiene', 'Jabón líquido con dispensador, 500 ml.', 3290, 10),
 ('P003', 'Detergente Ropa Líquido', 'Ariel', 'Limpieza', 'Detergente para ropa blanca y color, 3 L.', 8490, 10),
@@ -25,7 +25,7 @@ INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, pr
 ('P010', 'Guantes de Látex', 'Mapa', 'Protección', 'Guantes reutilizables talla M.', 1990, 10);
 
 
-//poblar sucursal
+-- poblar sucursal
 INSERT INTO sucursal (id_sucursal, nombre, direccion) VALUES
 (1, 'Sucursal Central', 'Calle Ficticia 123, Santiago'),
 (2, 'Sucursal Norte', 'Avenida Norte 456, Santiago'),
@@ -38,7 +38,7 @@ INSERT INTO sucursal (id_sucursal, nombre, direccion) VALUES
 (9, 'Sucursal Las Condes', 'Las Condes 2345, Santiago'),
 (10, 'Sucursal Maipú', 'Maipú 6789, Santiago');
 
-//poblar inventario
+-- poblar inventario
 INSERT INTO Inventario (id_inventario, id_producto, id_sucursal, stock) VALUES
 (1, 1, 1, 50),
 (2, 2, 1, 30),
@@ -51,7 +51,7 @@ INSERT INTO Inventario (id_inventario, id_producto, id_sucursal, stock) VALUES
 (9, 9, 6, 15),
 (10, 10, 7, 100);
 
-//poblar estado_pedido
+-- poblar estado_pedido
 INSERT INTO estado_pedido (id_estado, nombre) 
 VALUES
 (1, 'pendiente'),
@@ -62,10 +62,18 @@ VALUES
 (6, 'en espera'),
 (7, 'completado');
 
-//poblar tipo_entrega
+-- poblar tipo_entrega
 INSERT INTO tipo_entrega (id_tipo_entrega, nombre)
 VALUES
   (1, 'A domicilio'),
   (2, 'Retiro en tienda'),
   (3, 'Punto de recogida');
 
+INSERT INTO metodo_pago (nombre) VALUES
+('Transferencia Bancaria'),
+('Webpay'),
+('Pago en efectivo');
+
+--Dejar marca como sin marca por defecto
+ALTER TABLE Producto
+MODIFY marca VARCHAR(255) DEFAULT 'Sin marca';

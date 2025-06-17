@@ -8,6 +8,7 @@ const confirmarCompra = (req, res) => {
     return res.status(400).json({ error: 'Falta id_usuario' });
   }
 
+  // Verificar si ya existe un pedido pendiente
   const verificarPendienteSql = `
     SELECT id_pedido FROM Pedido 
     WHERE id_cliente = ? AND estado_pedido = 1
@@ -22,6 +23,7 @@ const confirmarCompra = (req, res) => {
       });
     }
 
+    // Obtener productos del carrito
     const obtenerCarritoSql = `
       SELECT c.id_producto, c.cantidad, p.precio, p.stock 
       FROM Carrito c 
@@ -33,11 +35,14 @@ const confirmarCompra = (req, res) => {
       if (err) return res.status(500).json({ error: 'Error al obtener el carrito' });
       if (carrito.length === 0) return res.status(400).json({ error: 'El carrito está vacío' });
 
+      // Calcular el total de la compra
+      const total = carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
+
+      // Crear pedido con estado "pendiente de pago"
       const crearPedidoSql = `
         INSERT INTO Pedido (id_cliente, fecha_pedido, estado_pedido, tipo_entrega, metodo_pago, direccion_entrega, total)
         VALUES (?, NOW(), 1, 1, 1, 'Por definir', ?)
       `;
-      const total = carrito.reduce((acc, item) => acc + item.precio * item.cantidad, 0);
 
       db.query(crearPedidoSql, [id_usuario, total], (err2, result) => {
         if (err2) {
@@ -47,6 +52,7 @@ const confirmarCompra = (req, res) => {
 
         const id_pedido = result.insertId;
 
+        // Insertar detalles del pedido
         const detalleSql = `
           INSERT INTO detalle_pedido (id_pedido, id_producto, cantidad, precio_unitario)
           VALUES ?
@@ -58,6 +64,7 @@ const confirmarCompra = (req, res) => {
         db.query(detalleSql, [detalles], (err3) => {
           if (err3) return res.status(500).json({ error: 'Error al insertar detalles del pedido' });
 
+          // Vaciar el carrito después de confirmar el pedido
           const vaciarSql = 'DELETE FROM Carrito WHERE id_usuario = ?';
           db.query(vaciarSql, [id_usuario], (err5) => {
             if (err5) return res.status(500).json({ error: 'Error al vaciar carrito' });
@@ -73,6 +80,7 @@ const confirmarCompra = (req, res) => {
     });
   });
 };
+
 
 // Confirmar pago y actualizar estado del pedido + descontar stock
 const pagarPedido = (req, res) => {
@@ -137,47 +145,69 @@ const obtenerBoleta = (req, res) => {
 // Cancelar pedido (restituir stock y eliminar pedido + detalle)
 const cancelarPedido = (req, res) => {
   const { id_pedido } = req.params;
+
   console.log("Cancelando pedido ID:", id_pedido);
 
-  const obtenerDetalleSql = 'SELECT id_producto, cantidad FROM detalle_pedido WHERE id_pedido = ?';
-  db.query(obtenerDetalleSql, [id_pedido], (err, detalles) => {
-    if (err) {
-      console.error("Error al obtener detalles:", err);
-      return res.status(500).json({ error: 'Error al obtener detalles del pedido' });
+  // Primero obtenemos el estado del pedido
+  const estadoSql = 'SELECT estado_pedido FROM Pedido WHERE id_pedido = ?';
+  db.query(estadoSql, [id_pedido], (errEstado, estadoResult) => {
+    if (errEstado || estadoResult.length === 0) {
+      console.error("Error al verificar estado del pedido:", errEstado);
+      return res.status(500).json({ error: 'Error al verificar estado del pedido' });
     }
 
-    if (detalles.length === 0) {
-      console.warn("No hay detalles para este pedido");
-      return res.status(400).json({ error: 'No hay productos asociados a este pedido' });
-    }
+    const estado = estadoResult[0].estado_pedido;
 
-    const devolverStock = detalles.map(item => {
-      return new Promise((resolve, reject) => {
-        const updateSql = 'UPDATE Producto SET stock = stock + ? WHERE id_producto = ?';
-        db.query(updateSql, [item.cantidad, item.id_producto], (err2) => {
-          if (err2) reject(err2);
-          else resolve();
-        });
-      });
-    });
+    // Luego obtenemos los productos del pedido
+    const obtenerDetalleSql = 'SELECT id_producto, cantidad FROM detalle_pedido WHERE id_pedido = ?';
+    db.query(obtenerDetalleSql, [id_pedido], (err, detalles) => {
+      if (err) {
+        console.error("Error al obtener detalles:", err);
+        return res.status(500).json({ error: 'Error al obtener detalles del pedido' });
+      }
 
-    Promise.all(devolverStock)
-      .then(() => {
-        db.query('DELETE FROM detalle_pedido WHERE id_pedido = ?', [id_pedido], (err3) => {
-          if (err3) return res.status(500).json({ error: 'Error al eliminar detalles del pedido' });
+      if (detalles.length === 0) {
+        console.warn("No hay detalles para este pedido");
+        return res.status(400).json({ error: 'No hay productos asociados a este pedido' });
+      }
 
-          db.query('DELETE FROM Pedido WHERE id_pedido = ?', [id_pedido], (err4) => {
-            if (err4) return res.status(500).json({ error: 'Error al eliminar el pedido' });
+      // Solo si el pedido fue pagado, devolver stock
+      const accionesStock = estado === 2
+        ? detalles.map(item => {
+            return new Promise((resolve, reject) => {
+              const updateSql = 'UPDATE Producto SET stock = stock + ? WHERE id_producto = ?';
+              db.query(updateSql, [item.cantidad, item.id_producto], (err2) => {
+                if (err2) reject(err2);
+                else resolve();
+              });
+            });
+          })
+        : [];
 
-            console.log("Pedido cancelado correctamente:", id_pedido);
-            res.status(200).json({ message: 'Pedido cancelado correctamente' });
+      Promise.all(accionesStock)
+        .then(() => {
+          // Eliminar detalles del pedido
+          db.query('DELETE FROM detalle_pedido WHERE id_pedido = ?', [id_pedido], (err3) => {
+            if (err3) return res.status(500).json({ error: 'Error al eliminar detalles del pedido' });
+
+            // Eliminar el pedido
+            db.query('DELETE FROM Pedido WHERE id_pedido = ?', [id_pedido], (err4) => {
+              if (err4) return res.status(500).json({ error: 'Error al eliminar el pedido' });
+
+              const msg = estado === 2
+                ? 'Pedido cancelado y stock devuelto correctamente'
+                : 'Pedido cancelado con éxito';
+
+              console.log(msg);
+              res.status(200).json({ message: msg });
+            });
           });
+        })
+        .catch(err => {
+          console.error("Error al devolver stock:", err);
+          res.status(500).json({ error: 'Error al devolver stock' });
         });
-      })
-      .catch(err => {
-        console.error("Error al devolver stock:", err);
-        res.status(500).json({ error: 'Error al devolver stock' });
-      });
+    });
   });
 };
 
