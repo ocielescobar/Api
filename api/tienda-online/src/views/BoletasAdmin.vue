@@ -18,7 +18,10 @@
       <tbody>
         <tr v-for="b in boletas" :key="b.id_pedido">
           <td>#{{ b.id_pedido }}</td>
-          <td>${{ Number(b.total).toFixed(2) }}</td>
+          <td>
+            CLP ${{ Number(b.total).toFixed(2) }} <br />
+            <small v-if="valorDolar">USD ${{ convertirADolares(b.total) }}</small>
+          </td>
           <td>{{ formatFecha(b.fecha) }}</td>
           <td>
             <router-link class="btn-detalle" :to="`/boleta/${b.id_pedido}`">Ver Detalle</router-link>
@@ -27,7 +30,7 @@
       </tbody>
     </table>
 
-    <button class="btn-volver" @click="$router.push('/productos')">Volver</button>
+    <button class="btn-volver" @click="$router.push('/admin/productos')">Volver</button>
   </div>
 </template>
 
@@ -37,7 +40,8 @@ export default {
     return {
       boletas: [],
       cargando: true,
-      error: null
+      error: null,
+      valorDolar: null
     };
   },
   mounted() {
@@ -48,6 +52,8 @@ export default {
       setTimeout(() => this.$router.push("/productos"), 2000);
       return;
     }
+
+    this.obtenerValorDolar();
 
     fetch("http://localhost:3000/api/boleta/debug/pedidos2")
       .then(res => {
@@ -67,7 +73,25 @@ export default {
   methods: {
     formatFecha(fecha) {
       if (!fecha) return "Sin fecha";
-      return new Date(fecha).toLocaleDateString("es-CL");
+      return new Date(fecha).toLocaleDateString("es-CL", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    },
+    obtenerValorDolar() {
+      fetch("http://localhost:3000/api/banco/dolar")
+        .then(res => res.json())
+        .then(data => {
+          this.valorDolar = data.dolar;
+        })
+        .catch(err => {
+          console.error("Error al obtener el valor del dólar:", err);
+        });
+    },
+    convertirADolares(valorCLP) {
+      if (!this.valorDolar) return "--";
+      return (valorCLP / this.valorDolar).toFixed(2);
     }
   }
 };

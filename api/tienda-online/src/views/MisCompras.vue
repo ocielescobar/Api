@@ -18,8 +18,11 @@
       <tbody>
         <tr v-for="p in pedidos" :key="p.id_pedido">
           <td>{{ p.id_pedido }}</td>
-          <td>{{ new Date(p.fecha_pedido).toLocaleString() }}</td>
-          <td>${{ Number(p.total).toFixed(0) }}</td>
+          <td>{{ formatearFecha(p.fecha_pedido) }}</td>
+          <td>
+            ${{ Number(p.total).toFixed(0) }} CLP<br />
+            <small v-if="valorDolar">USD ${{ convertirADolares(p.total) }}</small>
+          </td>
           <td>
             <span :class="estadoClase(p.estado_pedido)">
               {{ estadoTexto(p.estado_pedido) }}
@@ -49,7 +52,8 @@ export default {
     return {
       pedidos: [],
       cargando: true,
-      idUsuario: null
+      idUsuario: null,
+      valorDolar: null
     };
   },
   methods: {
@@ -60,6 +64,19 @@ export default {
           this.pedidos = data;
           this.cargando = false;
         });
+    },
+    obtenerDolar() {
+      fetch("http://localhost:3000/api/banco/dolar")
+        .then(res => res.json())
+        .then(data => {
+          this.valorDolar = data.dolar;
+        })
+        .catch(err => {
+          console.error("Error al obtener el valor del dólar:", err);
+        });
+    },
+    convertirADolares(montoCLP) {
+      return this.valorDolar ? (montoCLP / this.valorDolar).toFixed(2) : '--';
     },
     verBoleta(id, estado) {
       if (estado === 2) {
@@ -79,6 +96,15 @@ export default {
     },
     estadoClase(estado) {
       return estado === 1 ? 'estado-pendiente' : estado === 2 ? 'estado-pagado' : 'estado-otro';
+    },
+    formatearFecha(fecha) {
+      const opciones = {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      };
+      return new Date(fecha).toLocaleString('es-CL', opciones);
     }
   },
   mounted() {
@@ -96,6 +122,7 @@ export default {
       }
 
       this.idUsuario = usuario.id_usuario;
+      this.obtenerDolar(); // 💲 Obtiene el valor del dólar
       this.cargarPedidos();
     } catch (error) {
       console.error("Error al obtener datos de usuario:", error);

@@ -16,6 +16,9 @@ const webpayRoutes = require('./routes/webpayRoutes');
 const authController = require('./controllers/authController');
 //const compraRoutes = require('./routes/compraRoutes');
 const boletaRoutes = require('./routes/boletaRoutes');
+const bancoCentralRoutes = require('./routes/bancoCentralRoutes');
+
+
 app.use(express.json());
 //app.use('/login', authRoutes);
 
@@ -31,6 +34,8 @@ app.use('/api', carritoRoutes);
 app.use('/webpay', webpayRoutes);
 //app.use('/api/compra', compraRoutes);
 app.use('/api/boleta', boletaRoutes);
+app.use(bancoCentralRoutes);
+
 
 app.listen(process.env.PORT, () => {
   console.log(`Servidor corriendo en el puerto ${process.env.PORT}`);

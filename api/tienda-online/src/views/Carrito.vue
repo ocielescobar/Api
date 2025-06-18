@@ -8,14 +8,16 @@
     </div>
 
     <div v-else>
-      <div
-        class="item-carrito"
-        v-for="item in carrito"
-        :key="item.id_producto"
-      >
-        <p class="detalle">
-          <strong>{{ item.nombre }}</strong> - ${{ item.precio }} x {{ item.cantidad }} = <strong>${{ item.precio * item.cantidad }}</strong>
-        </p>
+      <div class="item-carrito" v-for="item in carrito" :key="item.id_producto">
+        <div class="detalle">
+          <p class="nombre">{{ item.nombre }}</p>
+          <p class="precios">
+            <span>CLP: ${{ item.precio }} x {{ item.cantidad }} = <strong>${{ item.precio * item.cantidad }}</strong></span><br />
+            <span v-if="valorDolar">
+              USD: ${{ convertirADolares(item.precio) }} x {{ item.cantidad }} = <strong>${{ convertirADolares(item.precio * item.cantidad) }}</strong>
+            </span>
+          </p>
+        </div>
 
         <div class="acciones">
           <button @click="cambiarCantidad(item.id_producto, item.cantidad - 1)" :disabled="item.cantidad <= 1">-</button>
@@ -37,7 +39,8 @@ export default {
   data() {
     return {
       carrito: [],
-      idUsuario: null
+      idUsuario: null,
+      valorDolar: null
     };
   },
   mounted() {
@@ -50,6 +53,7 @@ export default {
 
     this.idUsuario = user.id_usuario;
     this.cargarCarrito();
+    this.obtenerDolar();
   },
   methods: {
     cargarCarrito() {
@@ -60,6 +64,19 @@ export default {
           console.error("Error al cargar el carrito:", err);
           alert("No se pudo cargar el carrito");
         });
+    },
+    obtenerDolar() {
+      fetch("http://localhost:3000/api/banco/dolar")
+        .then(res => res.json())
+        .then(data => {
+          this.valorDolar = data.dolar;
+        })
+        .catch(err => {
+          console.error("Error al obtener valor del dólar:", err);
+        });
+    },
+    convertirADolares(montoCLP) {
+      return this.valorDolar ? (montoCLP / this.valorDolar).toFixed(2) : '--';
     },
     cambiarCantidad(idProducto, nuevaCantidad) {
       if (nuevaCantidad < 1) return;

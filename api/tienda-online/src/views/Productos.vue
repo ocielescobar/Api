@@ -9,7 +9,10 @@
       :key="producto.id_producto"
     >
       <p class="nombre"><strong>{{ producto.nombre }}</strong></p>
-      <p class="precio">$ {{ producto.precio }}</p>
+      <p class="precio">
+        CLP ${{ producto.precio }} <br />
+        <small v-if="valorDolar">USD ${{ convertirADolares(producto.precio) }}</small>
+      </p>
       <p class="stock">Stock disponible: {{ producto.stock }}</p>
 
       <div class="acciones">
@@ -36,7 +39,8 @@ export default {
   data() {
     return {
       productos: [],
-      idUsuario: null
+      idUsuario: null,
+      valorDolar: null
     };
   },
   mounted() {
@@ -49,6 +53,7 @@ export default {
 
     this.idUsuario = user.id_usuario;
     this.cargarProductos();
+    this.obtenerDolar(); // 👈 Obtener valor del dólar al cargar
   },
   methods: {
     cargarProductos() {
@@ -64,6 +69,19 @@ export default {
           console.error("Fallo al obtener productos:", err);
           alert("No se pudo cargar el catálogo");
         });
+    },
+    obtenerDolar() {
+      fetch("http://localhost:3000/api/banco/dolar")
+        .then(res => res.json())
+        .then(data => {
+          this.valorDolar = data.dolar;
+        })
+        .catch(err => {
+          console.error("Error al obtener el valor del dólar:", err);
+        });
+    },
+    convertirADolares(precioCLP) {
+      return this.valorDolar ? (precioCLP / this.valorDolar).toFixed(2) : '--';
     },
     agregarAlCarrito(producto) {
       const cantidad = producto.cantidadDeseada || 1;

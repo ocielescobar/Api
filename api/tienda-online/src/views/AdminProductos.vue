@@ -6,7 +6,7 @@
       <thead>
         <tr>
           <th>Nombre</th>
-          <th>Precio</th>
+          <th>Precio (CLP / USD)</th>
           <th>Stock</th>
           <th>Actualizar</th>
           <th>Eliminar</th>
@@ -15,7 +15,10 @@
       <tbody>
         <tr v-for="producto in productos" :key="producto.id_producto">
           <td>{{ producto.nombre }}</td>
-          <td>${{ producto.precio }}</td>
+          <td>
+            CLP ${{ producto.precio }}<br />
+            <small v-if="valorDolar">USD ${{ convertirADolares(producto.precio) }}</small>
+          </td>
           <td>
             <input
               type="number"
@@ -39,7 +42,7 @@
     <div v-if="mostrarFormularioNuevo" class="formulario-nuevo">
       <h3>Nuevo Producto</h3>
       <input v-model="nuevoProducto.nombre" placeholder="Nombre" />
-      <input v-model.number="nuevoProducto.precio" type="number" placeholder="Precio" />
+      <input v-model.number="nuevoProducto.precio" type="number" placeholder="Precio CLP" />
       <input v-model.number="nuevoProducto.stock" type="number" placeholder="Stock" />
 
       <div class="form-botones">
@@ -56,6 +59,7 @@ export default {
     return {
       productos: [],
       idUsuario: null,
+      valorDolar: null,
       mostrarFormularioNuevo: false,
       nuevoProducto: {
         nombre: '',
@@ -74,6 +78,7 @@ export default {
 
     this.idUsuario = user.id_usuario;
     this.cargarProductos();
+    this.obtenerDolar(); // 👈 Cargar USD al iniciar
   },
   methods: {
     cargarProductos() {
@@ -89,6 +94,19 @@ export default {
           console.error("Error al cargar productos:", err);
           alert("No se pudieron cargar los productos.");
         });
+    },
+    obtenerDolar() {
+      fetch("http://localhost:3000/api/banco/dolar")
+        .then(res => res.json())
+        .then(data => {
+          this.valorDolar = data.dolar;
+        })
+        .catch(err => {
+          console.error("Error al obtener valor del dólar:", err);
+        });
+    },
+    convertirADolares(precioCLP) {
+      return this.valorDolar ? (precioCLP / this.valorDolar).toFixed(2) : '--';
     },
     actualizarStock(producto) {
       const id = producto.id_producto;

@@ -25,15 +25,32 @@
           <tr v-for="item in boleta" :key="item.nombre">
             <td>{{ item.nombre }}</td>
             <td>{{ item.cantidad }}</td>
-            <td>${{ Number(item.precio_unitario).toFixed(2) }}</td>
-            <td>${{ Number(item.total).toFixed(2) }}</td>
+            <td>
+              CLP ${{ Number(item.precio_unitario).toFixed(2) }}<br />
+              <small v-if="valorDolar">USD ${{ convertirADolares(item.precio_unitario) }}</small>
+            </td>
+            <td>
+              CLP ${{ Number(item.total).toFixed(2) }}<br />
+              <small v-if="valorDolar">USD ${{ convertirADolares(item.total) }}</small>
+            </td>
           </tr>
         </tbody>
       </table>
 
-      <h3 class="total-final">Total: ${{ calcularTotal().toFixed(2) }}</h3>
+      <h3 class="total-final">
+        Total: CLP ${{ calcularTotal().toFixed(2) }}
+        <br v-if="valorDolar" />
+        <small v-if="valorDolar">USD ${{ convertirADolares(calcularTotal()) }}</small>
+      </h3>
 
-      <button class="btn-volver" @click="$router.push('/productos')">Volver a la tienda</button>
+      <div class="botones-navegacion">
+        <button class="btn-volver" @click="volverCompras()">
+          {{ rol === 'admin' ? 'Volver a Boletas' : 'Volver a Mis Compras' }}
+        </button>
+        <button class="btn-volver" @click="volverTienda()">
+          {{ rol === 'admin' ? 'Volver a Stock' : 'Volver a la tienda' }}
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -44,8 +61,10 @@ export default {
     return {
       boleta: [],
       cargando: true,
-      error: null
-    }
+      error: null,
+      valorDolar: null,
+      rol: null
+    };
   },
   mounted() {
     const idPedido = this.$route.params.id_pedido;
@@ -69,15 +88,37 @@ export default {
         this.error = err.message;
         this.cargando = false;
       });
+
+    this.obtenerValorDolar();
+
+    const usuario = JSON.parse(localStorage.getItem("usuario"));
+    this.rol = usuario?.rol || "cliente";
   },
   methods: {
     calcularTotal() {
-      return this.boleta.reduce((sum, item) => {
-        return sum + (item.precio_unitario * item.cantidad);
-      }, 0);
+      return this.boleta.reduce((sum, item) => sum + (item.precio_unitario * item.cantidad), 0);
+    },
+    obtenerValorDolar() {
+      fetch("http://localhost:3000/api/banco/dolar")
+        .then(res => res.json())
+        .then(data => {
+          this.valorDolar = data.dolar;
+        })
+        .catch(err => {
+          console.error("Error al obtener el valor del dólar:", err);
+        });
+    },
+    convertirADolares(valorCLP) {
+      return this.valorDolar ? (valorCLP / this.valorDolar).toFixed(2) : '--';
+    },
+    volverCompras() {
+      this.$router.push(this.rol === 'admin' ? '/admin/boletas' : '/mis-compras');
+    },
+    volverTienda() {
+      this.$router.push(this.rol === 'admin' ? '/admin/productos' : '/productos');
     }
   }
-}
+};
 </script>
 
 <style src="@/assets/css/boleta.css"></style>

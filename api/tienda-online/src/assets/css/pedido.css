@@ -1,4 +1,4 @@
-.boleta-container {
+.pedido-container {
   max-width: 900px;
   margin: 40px auto;
   padding: 30px;
@@ -6,72 +6,56 @@
   color: #fff;
   border-radius: 12px;
   box-shadow: 0 0 20px rgba(255, 221, 0, 0.2);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.boleta-container h2 {
+.pedido-container h2 {
   color: #ffdd00;
   text-align: center;
   margin-bottom: 30px;
 }
 
-.tabla-boleta {
+.tabla-pedido {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: 30px;
   background-color: #2a2a2a;
   border-radius: 8px;
   overflow: hidden;
-  font-size: 16px;
 }
 
-.tabla-boleta th,
-.tabla-boleta td {
+.tabla-pedido th,
+.tabla-pedido td {
   padding: 12px;
   text-align: center;
   border: 1px solid #444;
 }
 
-.tabla-boleta th {
+.tabla-pedido th {
   background-color: #333;
   color: #ffdd00;
-  font-weight: bold;
 }
 
-.tabla-boleta tr:nth-child(even) {
+.tabla-pedido tr:nth-child(even) {
   background-color: #1e1e1e;
-}
-
-.tabla-boleta small {
-  display: block;
-  font-size: 13px;
-  color: #bbb;
-  margin-top: 4px;
 }
 
 .total-final {
   text-align: right;
   font-size: 20px;
   color: #ffdd00;
-  margin-bottom: 30px;
+  margin: 20px 0;
 }
 
-.total-final small {
-  font-size: 14px;
-  color: #ccc;
+.acciones-pedido {
+  text-align: center;
+  margin-top: 20px;
 }
 
-.botones-navegacion {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-
+.btn-cancelar,
+.btn-pagar,
 .btn-volver {
-  background-color: #00c853;
-  color: white;
   padding: 12px 24px;
   font-size: 16px;
+  margin: 10px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -79,12 +63,38 @@
   transition: background-color 0.3s ease;
 }
 
+.btn-cancelar {
+  background-color: #d32f2f;
+  color: white;
+}
+
+.btn-cancelar:hover {
+  background-color: #b71c1c;
+}
+
+.btn-pagar {
+  background-color: #43a047;
+  color: white;
+}
+
+.btn-pagar:hover {
+  background-color: #2e7d32;
+}
+
+.btn-volver {
+  display: block;
+  margin: 30px auto 0;
+  background-color: #1976d2;
+  color: white;
+}
+
 .btn-volver:hover {
-  background-color: #009f45;
+  background-color: #0d47a1;
 }
 
 .mensaje-cargando,
-.mensaje-error {
+.mensaje-error,
+.mensaje-vacio {
   text-align: center;
   font-size: 16px;
   margin-bottom: 20px;

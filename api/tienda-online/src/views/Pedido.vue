@@ -1,22 +1,22 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div>
+  <div class="pedido-container">
     <h2>Pedido Generado</h2>
 
-    <div v-if="cargando">
+    <div v-if="cargando" class="mensaje-cargando">
       <p>Cargando boleta...</p>
     </div>
 
-    <div v-else-if="error">
-      <p style="color: red;">{{ error }}</p>
+    <div v-else-if="error" class="mensaje-error">
+      <p>{{ error }}</p>
     </div>
 
-    <div v-else-if="boleta.length === 0">
+    <div v-else-if="boleta.length === 0" class="mensaje-vacio">
       <p>No se encontraron detalles de la boleta.</p>
     </div>
 
     <div v-else>
-      <table border="1" cellpadding="8" style="margin-top: 10px;">
+      <table class="tabla-pedido">
         <thead>
           <tr>
             <th>Producto</th>
@@ -35,20 +35,15 @@
         </tbody>
       </table>
 
-      <h3 style="margin-top: 20px;">Total: ${{ calcularTotal().toFixed(2) }}</h3>
+      <h3 class="total-final">Total: ${{ calcularTotal().toFixed(2) }}</h3>
 
-      <div style="margin-top: 30px;">
-        <button @click="cancelarPedido" style="margin-right: 10px; background-color: red; color: white;">
-          Cancelar Pedido
-        </button>
-
-        <button @click="pagarPedido" style="background-color: green; color: white;">
-          Pagar con Webpay
-        </button>
+      <div class="acciones-pedido">
+        <button class="btn-cancelar" @click="cancelarPedido">Cancelar Pedido</button>
+        <button class="btn-pagar" @click="pagarPedido">Pagar con Webpay</button>
       </div>
     </div>
 
-    <button @click="$router.push('/productos')" style="margin-top: 20px;">Volver a la tienda</button>
+    <button class="btn-volver" @click="$router.push('/productos')">Volver a la tienda</button>
   </div>
 </template>
 
@@ -145,24 +140,4 @@ export default {
 };
 </script>
 
-<style scoped>
-h2 {
-  margin-bottom: 20px;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th {
-  background-color: #f2f2f2;
-}
-td, th {
-  text-align: center;
-}
-button {
-  padding: 10px 20px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-}
-</style>
+<style src="@/assets/css/pedido.css"></style>

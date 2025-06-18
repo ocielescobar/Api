@@ -16,7 +16,7 @@
 
         <!-- ADMINISTRADORES -->
         <template v-if="isAdmin">
-          <router-link to="/productos">Stock de Productos</router-link>
+          <router-link to="/admin/productos">Stock de Productos</router-link>
           <router-link to="/admin/boletas">Boletas</router-link>
         </template>
 
