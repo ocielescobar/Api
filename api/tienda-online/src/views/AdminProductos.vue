@@ -5,6 +5,7 @@
     <table class="tabla-productos">
       <thead>
         <tr>
+          <th></th>
           <th>Nombre</th>
           <th>Precio (CLP / USD)</th>
           <th>Stock</th>
@@ -14,6 +15,13 @@
       </thead>
       <tbody>
         <tr v-for="producto in productos" :key="producto.id_producto">
+          <td>
+            <img
+              :src="producto.imagen ? 'http://localhost:3000' + producto.imagen : require('@/assets/img/placeholder.png')"
+              alt="Imagen producto"
+              class="imagen-miniatura"
+            />
+          </td>
           <td>{{ producto.nombre }}</td>
           <td>
             CLP ${{ producto.precio }}<br />
@@ -44,6 +52,7 @@
       <input v-model="nuevoProducto.nombre" placeholder="Nombre" />
       <input v-model.number="nuevoProducto.precio" type="number" placeholder="Precio CLP" />
       <input v-model.number="nuevoProducto.stock" type="number" placeholder="Stock" />
+      <input type="file" @change="onImagenSeleccionada" accept="image/*" />
 
       <div class="form-botones">
         <button @click="guardarNuevoProducto" class="btn-guardar">Guardar</button>
@@ -65,7 +74,8 @@ export default {
         nombre: '',
         precio: null,
         stock: null
-      }
+      },
+      imagenSeleccionada: null
     };
   },
   mounted() {
@@ -78,7 +88,7 @@ export default {
 
     this.idUsuario = user.id_usuario;
     this.cargarProductos();
-    this.obtenerDolar(); // 👈 Cargar USD al iniciar
+    this.obtenerDolar();
   },
   methods: {
     cargarProductos() {
@@ -141,28 +151,42 @@ export default {
       fetch(`http://localhost:3000/api/productos/${producto.id_producto}`, {
         method: "DELETE"
       })
-        .then(res => res.json())
-        .then(data => {
+        .then(async res => {
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.error || "Error al eliminar el producto");
+          }
+
           alert(data.message || "Producto eliminado correctamente");
           this.productos = this.productos.filter(p => p.id_producto !== producto.id_producto);
         })
         .catch(err => {
-          console.error("Error al eliminar producto:", err);
-          alert("No se pudo eliminar el producto.");
+          console.error("Error al eliminar el producto:", err);
+          alert(err.message || "No se pudo eliminar el producto.");
         });
+    },
+    onImagenSeleccionada(event) {
+      this.imagenSeleccionada = event.target.files[0];
     },
     guardarNuevoProducto() {
       const p = this.nuevoProducto;
-
       if (!p.nombre || !p.precio || !p.stock) {
         alert("Completa los campos obligatorios: nombre, precio y stock.");
         return;
       }
 
+      const formData = new FormData();
+      formData.append("nombre", p.nombre);
+      formData.append("precio", p.precio);
+      formData.append("stock", p.stock);
+      if (this.imagenSeleccionada) {
+        formData.append("imagen", this.imagenSeleccionada);
+      }
+
       fetch("http://localhost:3000/api/productos", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(p)
+        body: formData
       })
         .then(async res => {
           const data = await res.json();
@@ -183,6 +207,7 @@ export default {
             precio: '',
             stock: ''
           };
+          this.imagenSeleccionada = null;
         })
         .catch(err => {
           console.error("Error al agregar producto:", err);

@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS producto (
   descripcion TEXT DEFAULT NULL,
   precio DECIMAL(10,2) DEFAULT NULL,
   stock INT(11) DEFAULT 0,
+  imagen VARCHAR(255),
   PRIMARY KEY (id_producto)
 );
 

@@ -69,7 +69,8 @@ CREATE TABLE IF NOT EXISTS Producto (
     categoria VARCHAR(50) NULL,
     descripcion TEXT NULL,
     precio DECIMAL(10,2),
-    stock INT
+    stock INT,
+    imagen VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS Inventario (

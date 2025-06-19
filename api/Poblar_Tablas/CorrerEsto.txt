@@ -1,0 +1,154 @@
+-- Crear base de datos y seleccionar
+CREATE DATABASE IF NOT EXISTS tienda_db;
+USE tienda_db;
+
+-- Desactivar claves foráneas temporalmente para evitar errores por orden
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Métodos de pago
+CREATE TABLE IF NOT EXISTS metodo_pago (
+  id_metodo_pago INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL
+);
+
+-- Estados del pedido
+CREATE TABLE IF NOT EXISTS estado_pedido (
+  id_estado INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL
+);
+
+-- Tipos de entrega
+CREATE TABLE IF NOT EXISTS tipo_entrega (
+  id_tipo_entrega INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL
+);
+
+-- Sucursales (para futuro)
+CREATE TABLE IF NOT EXISTS sucursal (
+  id_sucursal INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(100) NOT NULL,
+  direccion TEXT NOT NULL
+);
+
+-- Usuarios
+CREATE TABLE IF NOT EXISTS usuario (
+  id_usuario INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(100) NOT NULL,
+  correo VARCHAR(100) UNIQUE NOT NULL,
+  contrasena VARCHAR(100) NOT NULL,
+  rut VARCHAR(20),
+  rol VARCHAR(50) NOT NULL,
+  fecha DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Suscripciones
+CREATE TABLE IF NOT EXISTS suscripcion (
+  id_suscripcion INT PRIMARY KEY AUTO_INCREMENT,
+  id_usuario INT,
+  correo VARCHAR(100),
+  fecha_suscripcion DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
+);
+
+-- Contacto
+CREATE TABLE IF NOT EXISTS contacto (
+  id_contacto INT PRIMARY KEY AUTO_INCREMENT,
+  id_cliente INT,
+  mensaje TEXT NOT NULL,
+  fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_cliente) REFERENCES usuario(id_usuario)
+);
+
+-- Productos
+CREATE TABLE IF NOT EXISTS producto (
+  id_producto INT PRIMARY KEY AUTO_INCREMENT,
+  codigo_producto VARCHAR(50),
+  nombre VARCHAR(100) NOT NULL,
+  marca VARCHAR(50),
+  categoria VARCHAR(50),
+  descripcion TEXT,
+  precio DECIMAL(10,2) NOT NULL,
+  stock INT NOT NULL,
+  imagen VARCHAR(255) DEFAULT NULL
+);
+
+-- Inventario por sucursal
+CREATE TABLE IF NOT EXISTS inventario (
+  id_inventario INT PRIMARY KEY AUTO_INCREMENT,
+  id_producto INT,
+  id_sucursal INT,
+  stock INT NOT NULL,
+  FOREIGN KEY (id_producto) REFERENCES producto(id_producto),
+  FOREIGN KEY (id_sucursal) REFERENCES sucursal(id_sucursal)
+);
+
+-- Pedidos
+CREATE TABLE IF NOT EXISTS pedido (
+  id_pedido INT PRIMARY KEY AUTO_INCREMENT,
+  id_cliente INT,
+  fecha_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
+  estado_pedido INT,
+  tipo_entrega INT,
+  direccion_entrega TEXT,
+  metodo_pago INT,
+  total DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (id_cliente) REFERENCES usuario(id_usuario),
+  FOREIGN KEY (estado_pedido) REFERENCES estado_pedido(id_estado),
+  FOREIGN KEY (tipo_entrega) REFERENCES tipo_entrega(id_tipo_entrega),
+  FOREIGN KEY (metodo_pago) REFERENCES metodo_pago(id_metodo_pago)
+);
+
+-- Detalle del pedido
+CREATE TABLE IF NOT EXISTS detalle_pedido (
+  id_detalle_pedido INT PRIMARY KEY AUTO_INCREMENT,
+  id_pedido INT,
+  id_producto INT,
+  cantidad INT NOT NULL,
+  precio_unitario DECIMAL(10,2) NOT NULL,
+  FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
+  FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
+);
+
+-- Pagos (opcional para control más detallado)
+CREATE TABLE IF NOT EXISTS pago (
+  id_pago INT PRIMARY KEY AUTO_INCREMENT,
+  id_pedido INT,
+  fecha_pago DATETIME DEFAULT CURRENT_TIMESTAMP,
+  metodo_pago INT,
+  estado VARCHAR(50),
+  monto DECIMAL(10,2),
+  FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido),
+  FOREIGN KEY (metodo_pago) REFERENCES metodo_pago(id_metodo_pago)
+);
+
+-- Carrito
+CREATE TABLE IF NOT EXISTS carrito (
+  id_carrito INT PRIMARY KEY AUTO_INCREMENT,
+  id_usuario INT,
+  id_producto INT,
+  cantidad INT NOT NULL,
+  FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+  FOREIGN KEY (id_producto) REFERENCES producto(id_producto)
+);
+
+-- Transacciones Webpay
+CREATE TABLE IF NOT EXISTS transacciones_webpay (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token VARCHAR(255) NOT NULL,
+  id_pedido INT NOT NULL,
+  autorizacion_code VARCHAR(20),
+  response_code INT,
+  amount INT,
+  card_number VARCHAR(20),
+  status VARCHAR(50),
+  fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_pedido) REFERENCES pedido(id_pedido)
+);
+
+-- Restaurar claves foráneas
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- Insertar valores base
+INSERT INTO estado_pedido (nombre) VALUES ('Pendiente de pago'), ('Pagado'), ('Cancelado');
+INSERT INTO tipo_entrega (nombre) VALUES ('Retiro en tienda'), ('Envío a domicilio');
+INSERT INTO metodo_pago (nombre) VALUES ('WebPay'), ('Transferencia'), ('Efectivo');

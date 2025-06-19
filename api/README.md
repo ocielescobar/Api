@@ -43,6 +43,7 @@ Instala las dependencias necesarias:
 
 ```bash
 npm install express mysql dotenv
+npm install multer --para las imagenes.
 ```
 
 ---

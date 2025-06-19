@@ -138,3 +138,10 @@
   justify-content: center;
   gap: 15px;
 }
+.imagen-miniatura {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #555;
+}

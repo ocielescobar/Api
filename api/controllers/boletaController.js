@@ -130,11 +130,13 @@ const obtenerBoleta = (req, res) => {
   const { id_pedido } = req.params;
 
   const sql = `
-    SELECT p.nombre, d.cantidad, d.precio_unitario, (d.cantidad * d.precio_unitario) AS total
-    FROM detalle_pedido d
-    JOIN Producto p ON d.id_producto = p.id_producto
-    WHERE d.id_pedido = ?
-  `;
+  SELECT p.nombre, p.imagen, d.cantidad, d.precio_unitario, 
+         (d.cantidad * d.precio_unitario) AS total
+  FROM detalle_pedido d
+  JOIN Producto p ON d.id_producto = p.id_producto
+  WHERE d.id_pedido = ?
+`;
+
 
   db.query(sql, [id_pedido], (err, results) => {
     if (err) return res.status(500).json({ error: 'Error al obtener boleta' });

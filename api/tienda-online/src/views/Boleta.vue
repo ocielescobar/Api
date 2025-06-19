@@ -23,7 +23,15 @@
         </thead>
         <tbody>
           <tr v-for="item in boleta" :key="item.nombre">
-            <td>{{ item.nombre }}</td>
+            <td>
+              <img
+                :src="item.imagen ? 'http://localhost:3000' + item.imagen : require('@/assets/img/placeholder.png')"
+                alt="producto"
+                class="imagen-boleta"
+              />
+              <br />
+              {{ item.nombre }}
+            </td>
             <td>{{ item.cantidad }}</td>
             <td>
               CLP ${{ Number(item.precio_unitario).toFixed(2) }}<br />

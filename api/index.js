@@ -35,6 +35,7 @@ app.use('/webpay', webpayRoutes);
 //app.use('/api/compra', compraRoutes);
 app.use('/api/boleta', boletaRoutes);
 app.use(bancoCentralRoutes);
+app.use('/uploads', express.static('uploads'));
 
 
 app.listen(process.env.PORT, () => {

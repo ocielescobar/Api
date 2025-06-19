@@ -12,17 +12,32 @@ INSERT INTO Usuario (nombre, correo, contrasena, rut, rol, fecha) VALUES
 ('Jorge Fuentes', 'jorge.fuentes@example.com', 'fuentes789', '12345678-0', 'cliente', NOW());
 
 -- poblar producto
-INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, precio, stock) VALUES
-('P001', 'Papel Higiénico Doble Hoja', 'Elite', 'Higiene', 'Papel suave y resistente, 30 metros.', 2990, 10),
-('P002', 'Jabón Líquido Antibacterial', 'Lysol', 'Higiene', 'Jabón líquido con dispensador, 500 ml.', 3290, 10),
-('P003', 'Detergente Ropa Líquido', 'Ariel', 'Limpieza', 'Detergente para ropa blanca y color, 3 L.', 8490, 10),
-('P004', 'Toallas de Papel', 'Scott', 'Higiene', 'Toallas de papel absorbentes, paquete de 2.', 1890, 10),
-('P005', 'Desinfectante Multiusos', 'Virutex', 'Limpieza', 'Desinfectante para superficies, 1 L.', 4590, 10),
-('P006', 'Cloro Gel', 'Clorox', 'Limpieza', 'Cloro en gel, fragancia lavanda, 900 ml.', 2790, 10),
-('P007', 'Limpiavidrios', 'Mr. Músculo', 'Limpieza', 'Spray para vidrios y espejos, 500 ml.', 2690, 10),
-('P008', 'Servilletas de Papel', 'Elite', 'Higiene', '100 servilletas de papel blancas.', 990, 10),
-('P009', 'Bolsas de Basura 80L', 'Virutex', 'Aseo', 'Paquete de 10 bolsas resistentes.', 3490, 10),
-('P010', 'Guantes de Látex', 'Mapa', 'Protección', 'Guantes reutilizables talla M.', 1990, 10);
+INSERT INTO Producto (codigo_producto, nombre, marca, categoria, descripcion, precio, stock, imagen) VALUES
+('P0001', 'Martillo de Carpintero', 'Truper', 'Herramientas Manuales', 'Martillo con mango de madera y cabeza de acero.', 4990, 20, '/uploads/img01.png'),
+('P0002', 'Destornillador Plano', 'Stanley', 'Herramientas Manuales', 'Destornillador punta plana de acero.', 1990, 35, '/uploads/img02.png'),
+('P0003', 'Destornillador Philips', 'Bosch', 'Herramientas Manuales', 'Destornillador de cruz resistente.', 2290, 30, '/uploads/img03.png'),
+('P0004', 'Taladro Percutor', 'Makita', 'Herramientas Eléctricas', 'Taladro de 650W con maletín.', 39990, 15, '/uploads/img04.png'),
+('P0005', 'Sierra Circular', 'DeWalt', 'Herramientas Eléctricas', 'Sierra para cortar madera y metal.', 49990, 10, '/uploads/img05.png'),
+('P0006', 'Llave Ajustable', 'Bahco', 'Herramientas Manuales', 'Llave ajustable de acero forjado.', 5990, 25, '/uploads/img06.png'),
+('P0007', 'Juego de Llaves Allen', 'Pretul', 'Herramientas Manuales', 'Set de llaves hexagonales métricas.', 3490, 18, '/uploads/img07.png'),
+('P0008', 'Cinta Métrica 5m', 'Komelon', 'Medición', 'Cinta métrica con freno automático.', 2690, 40, '/uploads/img08.png'),
+('P0009', 'Nivel de Burbuja', 'Truper', 'Medición', 'Nivel de 40 cm con 3 burbujas.', 4990, 22, '/uploads/img09.png'),
+('P0010', 'Caja de Herramientas 19"', 'Stanley', 'Almacenamiento', 'Caja plástica con organizador.', 8990, 12, '/uploads/img10.png'),
+('P0011', 'Pistola de Silicona', 'Pretul', 'Adhesivos', 'Pistola para barras de silicona estándar.', 3990, 20, '/uploads/img11.png'),
+('P0012', 'Broca para Concreto 6mm', 'Bosch', 'Accesorios', 'Broca reforzada para concreto.', 990, 50, '/uploads/img12.png'),
+('P0013', 'Disco de Corte 4½"', 'Dewalt', 'Accesorios', 'Disco para esmeril angular.', 1890, 35, '/uploads/img13.png'),
+('P0014', 'Serrucho Universal', 'Tramontina', 'Herramientas Manuales', 'Serrucho para madera de 20".', 3790, 16, '/uploads/img14.png'),
+('P0015', 'Escuadra de Acero 12"', 'Stanley', 'Medición', 'Escuadra metálica para carpintería.', 3290, 19, '/uploads/img15.png'),
+('P0016', 'Pinza de Presión', 'Irwin', 'Herramientas Manuales', 'Pinza tipo "mordaza" ajustable.', 5990, 14, '/uploads/img16.png'),
+('P0017', 'Multímetro Digital', 'Uni-T', 'Instrumentos Eléctricos', 'Multímetro de bolsillo con pantalla LCD.', 9990, 9, '/uploads/img17.png'),
+('P0018', 'Alicate Universal', 'Tramontina', 'Herramientas Manuales', 'Alicate de 8" con aislamiento.', 4590, 28, '/uploads/img18.png'),
+('P0019', 'Guantes de Trabajo', '3M', 'Seguridad', 'Guantes resistentes con recubrimiento.', 1790, 50, '/uploads/img19.png'),
+('P0020', 'Lentes de Seguridad', '3M', 'Seguridad', 'Lentes transparentes con protección UV.', 2290, 45, '/uploads/img20.png'),
+('P0021', 'Mascarilla con Filtro', '3M', 'Seguridad', 'Mascarilla reutilizable con filtro.', 3490, 30, '/uploads/img21.png'),
+('P0022', 'Flexómetro 3m', 'Surtek', 'Medición', 'Cinta métrica compacta.', 1990, 33, '/uploads/img22.png'),
+('P0023', 'Cuchillo Cartonero', 'Stanley', 'Corte', 'Cuchillo retráctil con repuestos.', 1590, 38, '/uploads/img23.png'),
+('P0024', 'Rodillo para Pintura', 'Atlas', 'Pintura', 'Rodillo con mango ergonómico.', 1990, 26, '/uploads/img24.png'),
+('P0025', 'Brocha 2"', 'Tramontina', 'Pintura', 'Brocha de cerdas sintéticas.', 1290, 34, '/uploads/img25.png');
 
 
 -- poblar sucursal

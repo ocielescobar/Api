@@ -3,32 +3,41 @@
   <div class="catalogo-container">
     <h1>Catálogo de Productos</h1>
 
-    <div
-      class="producto-card"
-      v-for="producto in productos"
-      :key="producto.id_producto"
-    >
-      <p class="nombre"><strong>{{ producto.nombre }}</strong></p>
-      <p class="precio">
-        CLP ${{ producto.precio }} <br />
-        <small v-if="valorDolar">USD ${{ convertirADolares(producto.precio) }}</small>
-      </p>
-      <p class="stock">Stock disponible: {{ producto.stock }}</p>
-
-      <div class="acciones">
-        <input
-          type="number"
-          v-model.number="producto.cantidadDeseada"
-          :max="producto.stock"
-          min="1"
-          :disabled="producto.stock <= 0"
+    <div class="productos-grid">
+      <div
+        class="producto-card"
+        v-for="producto in productos"
+        :key="producto.id_producto"
+      >
+        <img
+          :src="producto.imagen ? 'http://localhost:3000' + producto.imagen : require('@/assets/img/placeholder.png')"
+          alt="Imagen producto"
+          class="imagen-miniatura"
         />
-        <button
-          @click="agregarAlCarrito(producto)"
-          :disabled="producto.stock <= 0 || (producto.cantidadDeseada || 1) > producto.stock"
-        >
-          Agregar al carrito
-        </button>
+        <p class="nombre"><strong>{{ producto.nombre }}</strong></p>
+
+        <p class="precio">
+          CLP ${{ producto.precio }} <br />
+          <small v-if="valorDolar">USD ${{ convertirADolares(producto.precio) }}</small>
+        </p>
+
+        <p class="stock">Stock disponible: {{ producto.stock }}</p>
+
+        <div class="acciones">
+          <input
+            type="number"
+            v-model.number="producto.cantidadDeseada"
+            :max="producto.stock"
+            min="1"
+            :disabled="producto.stock <= 0"
+          />
+          <button
+            @click="agregarAlCarrito(producto)"
+            :disabled="producto.stock <= 0 || (producto.cantidadDeseada || 1) > producto.stock"
+          >
+            Agregar al carrito
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -53,7 +62,7 @@ export default {
 
     this.idUsuario = user.id_usuario;
     this.cargarProductos();
-    this.obtenerDolar(); // 👈 Obtener valor del dólar al cargar
+    this.obtenerDolar();
   },
   methods: {
     cargarProductos() {

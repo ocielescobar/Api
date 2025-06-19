@@ -27,7 +27,17 @@
         </thead>
         <tbody>
           <tr v-for="item in boleta" :key="item.nombre">
-            <td>{{ item.nombre }}</td>
+            <td class="producto-cell">
+              <div class="imagen-nombre">
+                <img
+                  v-if="item.imagen"
+                  :src="'http://localhost:3000' + item.imagen"
+                  alt="producto"
+                  class="imagen-pedido"
+                />
+                <span>{{ item.nombre }}</span>
+              </div>
+            </td>
             <td>{{ item.cantidad }}</td>
             <td>${{ Number(item.precio_unitario).toFixed(2) }}</td>
             <td>${{ Number(item.total).toFixed(2) }}</td>

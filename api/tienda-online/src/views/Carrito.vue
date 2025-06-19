@@ -7,30 +7,54 @@
       No hay productos en el carrito.
     </div>
 
-    <div v-else>
+    <div class="carrito-grid" v-else>
       <div class="item-carrito" v-for="item in carrito" :key="item.id_producto">
-        <div class="detalle">
-          <p class="nombre">{{ item.nombre }}</p>
-          <p class="precios">
-            <span>CLP: ${{ item.precio }} x {{ item.cantidad }} = <strong>${{ item.precio * item.cantidad }}</strong></span><br />
-            <span v-if="valorDolar">
-              USD: ${{ convertirADolares(item.precio) }} x {{ item.cantidad }} = <strong>${{ convertirADolares(item.precio * item.cantidad) }}</strong>
-            </span>
-          </p>
-        </div>
+        <div class="card-contenedor">
+          <div class="imagen-wrapper">
+            <img
+              :src="item.imagen ? 'http://localhost:3000' + item.imagen : require('@/assets/img/placeholder.png')"
+              alt="Imagen producto"
+              class="imagen-carrito"
+            />
+          </div>
 
-        <div class="acciones">
-          <button @click="cambiarCantidad(item.id_producto, item.cantidad - 1)" :disabled="item.cantidad <= 1">-</button>
-          <span class="cantidad">{{ item.cantidad }}</span>
-          <button @click="cambiarCantidad(item.id_producto, item.cantidad + 1)">+</button>
-          <button class="eliminar" @click="eliminarProducto(item.id_producto)">Eliminar</button>
-        </div>
-      </div>
+          <div class="info-wrapper">
+            <div class="info-precio">
+              <p class="nombre">{{ item.nombre }}</p>
+              <p class="precios">
+                CLP: ${{ item.precio }} x {{ item.cantidad }} = <strong>${{ item.precio * item.cantidad }}</strong><br />
+                <span v-if="valorDolar">
+                  USD: ${{ convertirADolares(item.precio) }} x {{ item.cantidad }} =
+                  <strong>${{ convertirADolares(item.precio * item.cantidad) }}</strong>
+                </span>
+              </p>
+            </div>
 
-      <div class="confirmar-compra">
-        <button @click="confirmarCompra">Confirmar compra</button>
+            <div class="acciones-stock">
+              <button @click="cambiarCantidad(item.id_producto, item.cantidad - 1)" :disabled="item.cantidad <= 1">-</button>
+              <span class="cantidad">{{ item.cantidad }}</span>
+              <button @click="cambiarCantidad(item.id_producto, item.cantidad + 1)">+</button>
+              <button class="eliminar" @click="eliminarProducto(item.id_producto)">Eliminar</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+
+    <div v-if="carrito.length > 0" class="total-carrito">
+  <h3>Total del Carrito</h3>
+  <p>
+    CLP ${{ calcularTotal().toFixed(0) }} <br />
+    <small v-if="valorDolar">USD ${{ convertirADolares(calcularTotal()) }}</small>
+  </p>
+</div>
+
+<div class="confirmar-compra">
+  <button v-if="carrito.length > 0" @click="confirmarCompra">Confirmar compra</button>
+  <button v-else @click="$router.push('/productos')">Volver a productos</button>
+</div>
+
+
   </div>
 </template>
 
@@ -108,6 +132,11 @@ export default {
           alert("Error al eliminar producto: " + err.message);
         });
     },
+
+    calcularTotal() {
+      return this.carrito.reduce((total, item) => total + item.precio * item.cantidad, 0);
+    },
+
     confirmarCompra() {
       fetch("http://localhost:3000/api/boleta/confirmar", {
         method: "POST",
